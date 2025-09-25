@@ -36,72 +36,83 @@
       ></progress>
     </div>
 
-    <!-- Queue Items -->
-    <div v-if="queueItems.length > 0" class="space-y-4">
-      <div
-        v-for="item in queueItems"
-        :key="`${item.type}-${item.itemId}`"
-        class="card shadow-xl transition-all duration-300"
-        :class="{
-          'bg-success text-success-content': item.completed,
-          'bg-base-100': !item.completed
-        }"
-      >
-        <div class="card-body">
-          <div class="flex items-start gap-4">
-            <div class="flex items-center justify-center w-12 h-12 rounded-full">
-              <RotateCcw v-if="item.type === 'habit'" class="h-8 w-8 text-primary" />
-              <Brain v-else-if="item.type === 'evaluate'" class="h-8 w-8 text-warning" />
-              <CheckSquare v-else class="h-8 w-8 text-success" />
-            </div>
-            <div class="flex-1">
-              <h3 class="card-title text-lg">
-                {{ getItemTitle(item) }}
-                <div class="badge badge-outline">{{ item.type }}</div>
-              </h3>
-              <p class="text-base-content/70 mb-3">{{ getItemDescription(item) }}</p>
-
-              <!-- Habit/Evaluate specific info -->
-              <div v-if="item.type === 'habit' || item.type === 'evaluate'" class="text-sm opacity-70 mb-3">
-                Frequency: Every {{ getFrequency(item) }} day(s)
-                <span v-if="getLastCompleted(item)">
-                  • Last completed: {{ formatDate(getLastCompleted(item)) }}
-                </span>
-              </div>
-
-              <!-- Action buttons -->
-              <div class="card-actions">
-                <button
-                  v-if="!item.completed && getDoInstantly(item)"
-                  @click="markCompleted(item)"
-                  class="btn btn-primary btn-sm"
-                >
-                  <Check class="h-4 w-4" />
-                  Complete Now
-                </button>
-                <button
-                  v-if="!item.completed && !getDoInstantly(item)"
-                  @click="scheduleItem(item)"
-                  class="btn btn-secondary btn-sm"
-                >
-                  <Calendar class="h-4 w-4" />
-                  Schedule
-                </button>
-                <button
-                  v-if="!item.completed"
-                  @click="skipItem(item)"
-                  class="btn btn-ghost btn-sm"
-                >
-                  Skip
-                </button>
-              </div>
-            </div>
-
-            <!-- Completed checkmark -->
-            <div v-if="item.completed" class="flex items-center justify-center w-8 h-8 rounded-full bg-success text-success-content">
-              <Check class="h-5 w-5" />
-            </div>
+    <!-- Current Queue Item -->
+    <div v-if="currentItem" class="card bg-base-100 shadow-xl">
+      <div class="card-body text-center">
+        <div class="flex justify-center mb-4">
+          <div class="flex items-center justify-center w-16 h-16 rounded-full bg-base-200">
+            <RotateCcw v-if="currentItem.type === 'habit'" class="h-10 w-10 text-primary" />
+            <Brain v-else-if="currentItem.type === 'evaluate'" class="h-10 w-10 text-warning" />
+            <CheckSquare v-else class="h-10 w-10 text-success" />
           </div>
+        </div>
+
+        <div class="badge badge-outline mb-2">{{ currentItem.type }}</div>
+        <h2 class="card-title text-2xl justify-center mb-3">{{ getItemTitle(currentItem) }}</h2>
+        <p class="text-base-content/70 mb-6 max-w-2xl mx-auto">{{ getItemDescription(currentItem) }}</p>
+
+        <!-- Habit/Evaluate frequency info -->
+        <div v-if="currentItem.type === 'habit' || currentItem.type === 'evaluate'" class="text-sm opacity-70 mb-6">
+          Every {{ getFrequency(currentItem) }} day(s)
+          <span v-if="getLastCompleted(currentItem)" class="block mt-1">
+            Last completed: {{ formatDate(getLastCompleted(currentItem)) }}
+          </span>
+        </div>
+
+        <!-- Evaluation text input -->
+        <div v-if="currentItem.type === 'evaluate'" class="form-control w-full max-w-lg mx-auto mb-6">
+          <label class="label">
+            <span class="label-text">Your thoughts:</span>
+          </label>
+          <textarea
+            v-model="evaluationResponse"
+            class="textarea textarea-bordered w-full"
+            placeholder="Reflect on this question..."
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="card-actions justify-center gap-4">
+          <!-- Habits: Done / Not Today -->
+          <template v-if="currentItem.type === 'habit'">
+            <button @click="markCompleted(currentItem)" class="btn btn-primary">
+              <Check class="h-4 w-4" />
+              Done
+            </button>
+            <button @click="skipItem(currentItem)" class="btn btn-outline">
+              Not Today
+            </button>
+          </template>
+
+          <!-- Todos: Finished / Made Progress / Not Today -->
+          <template v-else-if="currentItem.type === 'todo'">
+            <button @click="markCompleted(currentItem)" class="btn btn-success">
+              <Check class="h-4 w-4" />
+              Finished
+            </button>
+            <button @click="markProgress(currentItem)" class="btn btn-info">
+              <ArrowRight class="h-4 w-4" />
+              Made Progress
+            </button>
+            <button @click="skipItem(currentItem)" class="btn btn-outline">
+              Not Today
+            </button>
+          </template>
+
+          <!-- Evaluations: Done (only when text is not empty) -->
+          <template v-else-if="currentItem.type === 'evaluate'">
+            <button
+              @click="completeEvaluation(currentItem)"
+              :disabled="!evaluationResponse.trim()"
+              class="btn btn-warning"
+              :class="{ 'btn-disabled': !evaluationResponse.trim() }"
+            >
+              <Check class="h-4 w-4" />
+              Done
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -133,30 +144,6 @@
       </div>
     </div>
 
-    <!-- Schedule Modal -->
-    <dialog id="schedule-modal" class="modal" :class="{ 'modal-open': showScheduleModal }">
-      <div class="modal-box">
-        <h3 class="text-lg font-bold mb-4">Schedule Item</h3>
-        <p class="mb-4">When would you like to be reminded about this?</p>
-
-        <div class="form-control mb-4">
-          <label class="label">
-            <span class="label-text">Date</span>
-          </label>
-          <input
-            v-model="scheduleDate"
-            type="date"
-            class="input input-bordered w-full"
-            :min="new Date().toISOString().split('T')[0]"
-          />
-        </div>
-
-        <div class="modal-action">
-          <button @click="confirmSchedule" class="btn btn-primary">Schedule</button>
-          <button @click="showScheduleModal = false" class="btn">Cancel</button>
-        </div>
-      </div>
-    </dialog>
   </div>
 </template>
 
@@ -166,15 +153,14 @@ import { queueService, habitService, evaluateService, todoService } from '@/serv
 import type { QueueItem, Habit, Evaluate, Todo } from '@/db'
 import {
   ArrowLeft, Shuffle, RotateCw, RotateCcw, Brain, CheckSquare,
-  Check, Calendar, PartyPopper, Plus
+  Check, Calendar, PartyPopper, Plus, ArrowRight
 } from 'lucide-vue-next'
 
 const queueItems = ref<Array<QueueItem & { item?: Habit | Evaluate | Todo }>>([])
+const currentItem = ref<QueueItem & { item?: Habit | Evaluate | Todo } | null>(null)
+const evaluationResponse = ref('')
 const isGenerating = ref(false)
 const hasItems = ref(false)
-const showScheduleModal = ref(false)
-const scheduleDate = ref('')
-const itemToSchedule = ref<QueueItem & { item?: Habit | Evaluate | Todo } | null>(null)
 
 const completedCount = ref(0)
 const totalCount = ref(0)
@@ -202,6 +188,12 @@ const loadQueue = async () => {
 
   completedCount.value = queueItems.value.filter(item => item.completed).length
   totalCount.value = queueItems.value.length
+
+  // Set current item to first uncompleted item
+  currentItem.value = queueItems.value.find(item => !item.completed) || null
+
+  // Clear evaluation response when switching items
+  evaluationResponse.value = ''
 }
 
 const checkHasItems = async () => {
@@ -271,8 +263,6 @@ const markCompleted = async (item: QueueItem & { item?: Habit | Evaluate | Todo 
 
   if (item.type === 'habit') {
     await habitService.markCompleted(item.itemId)
-  } else if (item.type === 'evaluate') {
-    await evaluateService.markCompleted(item.itemId)
   } else if (item.type === 'todo') {
     await todoService.markCompleted(item.itemId)
   }
@@ -280,26 +270,18 @@ const markCompleted = async (item: QueueItem & { item?: Habit | Evaluate | Todo 
   await loadQueue()
 }
 
-const scheduleItem = (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {
-  itemToSchedule.value = item
-  scheduleDate.value = new Date().toISOString().split('T')[0]
-  showScheduleModal.value = true
+const markProgress = async (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {
+  // Just skip the item for now - could add progress tracking later
+  await skipItem(item)
 }
 
-const confirmSchedule = async () => {
-  if (!itemToSchedule.value || !scheduleDate.value) return
+const completeEvaluation = async (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {
+  if (!evaluationResponse.value.trim()) return
 
-  const scheduledDate = new Date(scheduleDate.value)
-  await queueService.create({
-    type: itemToSchedule.value.type,
-    itemId: itemToSchedule.value.itemId,
-    scheduledFor: scheduledDate,
-    completed: false
-  })
+  await queueService.markCompleted(item.id!, evaluationResponse.value)
+  await evaluateService.markCompleted(item.itemId)
 
-  await skipItem(itemToSchedule.value)
-  showScheduleModal.value = false
-  itemToSchedule.value = null
+  await loadQueue()
 }
 
 const skipItem = async (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {

@@ -29,9 +29,6 @@
                 <div class="badge badge-outline">
                   Every {{ evaluate.minFrequencyDays }} day{{ evaluate.minFrequencyDays !== 1 ? 's' : '' }}
                 </div>
-                <div class="badge" :class="evaluate.doInstantly ? 'badge-warning' : 'badge-secondary'">
-                  {{ evaluate.doInstantly ? 'Do Instantly' : 'Schedule' }}
-                </div>
               </div>
 
               <div class="text-sm mt-2 opacity-70">
@@ -123,21 +120,6 @@
             </label>
           </div>
 
-          <div class="form-control">
-            <label class="label cursor-pointer">
-              <span class="label-text">Do instantly (vs schedule for later)</span>
-              <input
-                v-model="formData.doInstantly"
-                type="checkbox"
-                class="toggle toggle-warning"
-              />
-            </label>
-            <label class="label">
-              <span class="label-text-alt">
-                {{ formData.doInstantly ? 'This evaluation can be completed immediately' : 'This evaluation should be scheduled for later' }}
-              </span>
-            </label>
-          </div>
 
           <div class="modal-action">
             <button type="submit" class="btn btn-warning">
@@ -165,8 +147,7 @@ const editingEvaluate = ref<Evaluate | null>(null)
 const formData = ref({
   question: '',
   description: '',
-  minFrequencyDays: 7,
-  doInstantly: true
+  minFrequencyDays: 7
 })
 
 const loadEvaluates = async () => {
@@ -186,8 +167,7 @@ const editEvaluate = (evaluate: Evaluate) => {
   formData.value = {
     question: evaluate.question,
     description: evaluate.description,
-    minFrequencyDays: evaluate.minFrequencyDays,
-    doInstantly: evaluate.doInstantly
+    minFrequencyDays: evaluate.minFrequencyDays
   }
   showEditForm.value = true
 }
@@ -203,11 +183,15 @@ const saveEvaluate = async () => {
   try {
     const evaluateData = {
       ...formData.value,
+      doInstantly: true, // Evaluations are always instant
       createdAt: new Date()
     }
 
     if (editingEvaluate.value) {
-      await evaluateService.update(editingEvaluate.value.id!, formData.value)
+      await evaluateService.update(editingEvaluate.value.id!, {
+        ...formData.value,
+        doInstantly: true
+      })
     } else {
       await evaluateService.create(evaluateData)
     }
@@ -227,8 +211,7 @@ const cancelForm = () => {
   formData.value = {
     question: '',
     description: '',
-    minFrequencyDays: 7,
-    doInstantly: true
+    minFrequencyDays: 7
   }
 }
 

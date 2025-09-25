@@ -126,8 +126,12 @@ export const queueService = {
     return id as number
   },
 
-  async markCompleted(id: number): Promise<void> {
-    await db.queueItems.update(id, { completed: true })
+  async markCompleted(id: number, response?: string): Promise<void> {
+    const updateData: Partial<QueueItem> = { completed: true }
+    if (response) {
+      updateData.response = response
+    }
+    await db.queueItems.update(id, updateData)
   },
 
   async delete(id: number): Promise<void> {

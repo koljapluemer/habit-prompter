@@ -37,6 +37,7 @@ export interface QueueItem {
   itemId: number
   scheduledFor: Date
   completed: boolean
+  response?: string // For evaluation responses
 }
 
 const db = new Dexie('HabitTrackerDB') as Dexie & {
