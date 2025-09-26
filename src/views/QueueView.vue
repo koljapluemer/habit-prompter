@@ -47,9 +47,7 @@
           </div>
         </div>
 
-        <div class="badge badge-outline mb-2">{{ currentItem.type }}</div>
         <h2 class="card-title text-2xl justify-center mb-3">{{ getItemTitle(currentItem) }}</h2>
-        <p class="text-base-content/70 mb-6 max-w-2xl mx-auto">{{ getItemDescription(currentItem) }}</p>
 
         <!-- Habit/Evaluate frequency info -->
         <div v-if="currentItem.type === 'habit' || currentItem.type === 'evaluate'" class="text-sm opacity-70 mb-6">
@@ -226,10 +224,6 @@ const getItemTitle = (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {
   return 'Unknown item'
 }
 
-const getItemDescription = (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {
-  if (!item.item) return ''
-  return item.item.description
-}
 
 const getFrequency = (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {
   if (!item.item || (item.type !== 'habit' && item.type !== 'evaluate')) return 0

@@ -12,49 +12,54 @@
       </button>
     </div>
 
-    <!-- Evaluations Grid -->
-    <div v-if="evaluates.length > 0" class="grid gap-4">
-      <div
-        v-for="evaluate in evaluates"
-        :key="evaluate.id"
-        class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow"
-      >
-        <div class="card-body">
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <h3 class="card-title">{{ evaluate.question }}</h3>
-              <p class="text-base-content/70 mb-2">{{ evaluate.description }}</p>
-
-              <div class="flex gap-4 text-sm">
-                <div class="badge badge-outline">
-                  Every {{ evaluate.minFrequencyDays }} day{{ evaluate.minFrequencyDays !== 1 ? 's' : '' }}
-                </div>
-                <div v-if="evaluate.isHighPrio" class="badge badge-error">
-                  High Priority
-                </div>
-              </div>
-
-              <div class="text-sm mt-2 opacity-70">
-                Last completed: {{ evaluate.lastCompleted ? formatDate(evaluate.lastCompleted) : 'Never' }}
-              </div>
-            </div>
-
-            <div class="dropdown dropdown-end">
-              <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-                <MoreVertical class="h-4 w-4" />
-              </button>
-              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow-xl">
-                <li><a @click="editEvaluate(evaluate)">
-                  <Edit class="h-4 w-4" />
-                  Edit
-                </a></li>
-                <li><a @click="deleteEvaluate(evaluate)" class="text-error">
-                  <Trash2 class="h-4 w-4" />
-                  Delete
-                </a></li>
-              </ul>
-            </div>
-          </div>
+    <!-- Evaluations Table -->
+    <div v-if="evaluates.length > 0" class="card bg-base-100 shadow-xl">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Frequency</th>
+                <th>Priority</th>
+                <th>Last Completed</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="evaluate in evaluates" :key="evaluate.id" class="hover">
+                <td>
+                  <div class="font-medium">{{ evaluate.question }}</div>
+                </td>
+                <td>
+                  <div class="badge badge-outline">
+                    Every {{ evaluate.minFrequencyDays }} day{{ evaluate.minFrequencyDays !== 1 ? 's' : '' }}
+                  </div>
+                </td>
+                <td>
+                  <div v-if="evaluate.isHighPrio" class="badge badge-error">High Priority</div>
+                  <div v-else class="text-base-content/70">Normal</div>
+                </td>
+                <td>
+                  <div class="text-sm">
+                    {{ evaluate.lastCompleted ? formatDate(evaluate.lastCompleted) : 'Never' }}
+                  </div>
+                </td>
+                <td>
+                  <div class="flex gap-2">
+                    <button @click="editEvaluate(evaluate)" class="btn btn-ghost btn-sm">
+                      <Edit class="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button @click="deleteEvaluate(evaluate)" class="btn btn-ghost btn-sm text-error">
+                      <Trash2 class="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -94,17 +99,6 @@
             />
           </div>
 
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Description</span>
-            </label>
-            <textarea
-              v-model="formData.description"
-              placeholder="Additional context or notes about this evaluation..."
-              class="textarea textarea-bordered w-full"
-              rows="3"
-            ></textarea>
-          </div>
 
           <div class="form-control">
             <label class="label">
@@ -155,7 +149,7 @@
 import { ref, onMounted } from 'vue'
 import { evaluateService } from '@/services/database'
 import type { Evaluate } from '@/db'
-import { Brain, Plus, MoreVertical, Edit, Trash2 } from 'lucide-vue-next'
+import { Brain, Plus, Edit, Trash2 } from 'lucide-vue-next'
 
 const evaluates = ref<Evaluate[]>([])
 const showAddForm = ref(false)
@@ -164,7 +158,6 @@ const editingEvaluate = ref<Evaluate | null>(null)
 
 const formData = ref({
   question: '',
-  description: '',
   minFrequencyDays: 7,
   isHighPrio: false
 })
@@ -185,7 +178,6 @@ const editEvaluate = (evaluate: Evaluate) => {
   editingEvaluate.value = evaluate
   formData.value = {
     question: evaluate.question,
-    description: evaluate.description,
     minFrequencyDays: evaluate.minFrequencyDays,
     isHighPrio: evaluate.isHighPrio
   }
@@ -226,7 +218,6 @@ const cancelForm = () => {
   editingEvaluate.value = null
   formData.value = {
     question: '',
-    description: '',
     minFrequencyDays: 7,
     isHighPrio: false
   }

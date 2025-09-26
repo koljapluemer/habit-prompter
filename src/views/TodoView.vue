@@ -32,77 +32,76 @@
       </a>
     </div>
 
-    <!-- Todos Grid -->
-    <div v-if="filteredTodos.length > 0" class="grid gap-4">
-      <div
-        v-for="todo in filteredTodos"
-        :key="todo.id"
-        class="card shadow-xl hover:shadow-2xl transition-shadow"
-        :class="{
-          'bg-base-100': !todo.completed,
-          'bg-success/10 border border-success/20': todo.completed
-        }"
-      >
-        <div class="card-body">
-          <div class="flex justify-between items-start">
-            <div class="flex-1 flex items-start gap-3">
-              <button
-                @click="toggleComplete(todo)"
-                class="btn btn-circle btn-sm mt-1"
-                :class="todo.completed ? 'btn-success' : 'btn-outline'"
-              >
-                <Check v-if="todo.completed" class="h-4 w-4" />
-                <div v-else class="h-4 w-4"></div>
-              </button>
-
-              <div class="flex-1">
-                <h3 class="card-title" :class="{ 'line-through opacity-60': todo.completed }">
-                  {{ todo.title }}
-                </h3>
-                <p class="text-base-content/70 mb-2" :class="{ 'line-through opacity-60': todo.completed }">
-                  {{ todo.description }}
-                </p>
-
-                <div class="flex gap-2 text-sm">
-                  <div v-if="todo.isHighPrio" class="badge badge-error">
-                    High Priority
+    <!-- Todos Table -->
+    <div v-if="filteredTodos.length > 0" class="card bg-base-100 shadow-xl">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Title</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="todo in filteredTodos" :key="todo.id" class="hover">
+                <td>
+                  <button
+                    @click="toggleComplete(todo)"
+                    class="btn btn-circle btn-sm"
+                    :class="todo.completed ? 'btn-success' : 'btn-outline'"
+                  >
+                    <Check v-if="todo.completed" class="h-4 w-4" />
+                    <div v-else class="h-4 w-4"></div>
+                  </button>
+                </td>
+                <td>
+                  <div class="font-medium" :class="{ 'line-through opacity-60': todo.completed }">
+                    {{ todo.title }}
                   </div>
-                  <div v-if="todo.completed && todo.completedAt" class="badge badge-outline">
-                    Completed {{ formatDate(todo.completedAt) }}
+                </td>
+                <td>
+                  <div v-if="todo.isHighPrio" class="badge badge-error">High Priority</div>
+                  <div v-else class="text-base-content/70">Normal</div>
+                </td>
+                <td>
+                  <div class="flex gap-2">
+                    <div v-if="todo.completed && todo.completedAt" class="badge badge-success">
+                      Completed {{ formatDate(todo.completedAt) }}
+                    </div>
+                    <div v-if="todo.archived" class="badge badge-ghost">
+                      Archived
+                    </div>
                   </div>
-                  <div v-if="todo.archived" class="badge badge-ghost">
-                    Archived
+                </td>
+                <td>
+                  <div class="text-sm">
+                    {{ formatDate(todo.createdAt) }}
                   </div>
-                </div>
-
-                <div class="text-sm mt-1 opacity-70">
-                  Created {{ formatDate(todo.createdAt) }}
-                </div>
-              </div>
-            </div>
-
-            <div class="dropdown dropdown-end">
-              <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-                <MoreVertical class="h-4 w-4" />
-              </button>
-              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow-xl">
-                <li><a @click="editTodo(todo)">
-                  <Edit class="h-4 w-4" />
-                  Edit
-                </a></li>
-                <li v-if="!todo.archived && todo.completed">
-                  <a @click="archiveTodo(todo)">
-                    <Archive class="h-4 w-4" />
-                    Archive
-                  </a>
-                </li>
-                <li><a @click="deleteTodo(todo)" class="text-error">
-                  <Trash2 class="h-4 w-4" />
-                  Delete
-                </a></li>
-              </ul>
-            </div>
-          </div>
+                </td>
+                <td>
+                  <div class="flex gap-2">
+                    <button @click="editTodo(todo)" class="btn btn-ghost btn-sm">
+                      <Edit class="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button v-if="!todo.archived && todo.completed" @click="archiveTodo(todo)" class="btn btn-ghost btn-sm">
+                      <Archive class="h-4 w-4" />
+                      Archive
+                    </button>
+                    <button @click="deleteTodo(todo)" class="btn btn-ghost btn-sm text-error">
+                      <Trash2 class="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -153,17 +152,6 @@
             />
           </div>
 
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Description</span>
-            </label>
-            <textarea
-              v-model="formData.description"
-              placeholder="Additional details about this task..."
-              class="textarea textarea-bordered w-full"
-              rows="3"
-            ></textarea>
-          </div>
 
           <div class="form-control">
             <label class="label cursor-pointer">
@@ -198,7 +186,7 @@ import { ref, onMounted, computed } from 'vue'
 import { todoService } from '@/services/database'
 import type { Todo } from '@/db'
 import {
-  CheckSquare, Plus, Clock, CheckCircle, Check, MoreVertical,
+  CheckSquare, Plus, Clock, CheckCircle, Check,
   Edit, Archive, Trash2
 } from 'lucide-vue-next'
 
@@ -210,7 +198,6 @@ const editingTodo = ref<Todo | null>(null)
 
 const formData = ref({
   title: '',
-  description: '',
   isHighPrio: false
 })
 
@@ -251,7 +238,6 @@ const editTodo = (todo: Todo) => {
   editingTodo.value = todo
   formData.value = {
     title: todo.title,
-    description: todo.description,
     isHighPrio: todo.isHighPrio
   }
   showEditForm.value = true
@@ -300,7 +286,6 @@ const cancelForm = () => {
   editingTodo.value = null
   formData.value = {
     title: '',
-    description: '',
     isHighPrio: false
   }
 }

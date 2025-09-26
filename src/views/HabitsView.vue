@@ -12,49 +12,54 @@
       </button>
     </div>
 
-    <!-- Habits Grid -->
-    <div v-if="habits.length > 0" class="grid gap-4">
-      <div
-        v-for="habit in habits"
-        :key="habit.id"
-        class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow"
-      >
-        <div class="card-body">
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <h3 class="card-title">{{ habit.title }}</h3>
-              <p class="text-base-content/70 mb-2">{{ habit.description }}</p>
-
-              <div class="flex gap-4 text-sm">
-                <div class="badge badge-outline">
-                  Every {{ habit.minFrequencyDays }} day{{ habit.minFrequencyDays !== 1 ? 's' : '' }}
-                </div>
-                <div v-if="habit.isHighPrio" class="badge badge-error">
-                  High Priority
-                </div>
-              </div>
-
-              <div class="text-sm mt-2 opacity-70">
-                Last completed: {{ habit.lastCompleted ? formatDate(habit.lastCompleted) : 'Never' }}
-              </div>
-            </div>
-
-            <div class="dropdown dropdown-end">
-              <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-                <MoreVertical class="h-4 w-4" />
-              </button>
-              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow-xl">
-                <li><a @click="editHabit(habit)">
-                  <Edit class="h-4 w-4" />
-                  Edit
-                </a></li>
-                <li><a @click="deleteHabit(habit)" class="text-error">
-                  <Trash2 class="h-4 w-4" />
-                  Delete
-                </a></li>
-              </ul>
-            </div>
-          </div>
+    <!-- Habits Table -->
+    <div v-if="habits.length > 0" class="card bg-base-100 shadow-xl">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Frequency</th>
+                <th>Priority</th>
+                <th>Last Completed</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="habit in habits" :key="habit.id" class="hover">
+                <td>
+                  <div class="font-medium">{{ habit.title }}</div>
+                </td>
+                <td>
+                  <div class="badge badge-outline">
+                    Every {{ habit.minFrequencyDays }} day{{ habit.minFrequencyDays !== 1 ? 's' : '' }}
+                  </div>
+                </td>
+                <td>
+                  <div v-if="habit.isHighPrio" class="badge badge-error">High Priority</div>
+                  <div v-else class="text-base-content/70">Normal</div>
+                </td>
+                <td>
+                  <div class="text-sm">
+                    {{ habit.lastCompleted ? formatDate(habit.lastCompleted) : 'Never' }}
+                  </div>
+                </td>
+                <td>
+                  <div class="flex gap-2">
+                    <button @click="editHabit(habit)" class="btn btn-ghost btn-sm">
+                      <Edit class="h-4 w-4" />
+                      Edit
+                    </button>
+                    <button @click="deleteHabit(habit)" class="btn btn-ghost btn-sm text-error">
+                      <Trash2 class="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -94,17 +99,6 @@
             />
           </div>
 
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Description</span>
-            </label>
-            <textarea
-              v-model="formData.description"
-              placeholder="Details about this habit..."
-              class="textarea textarea-bordered w-full"
-              rows="3"
-            ></textarea>
-          </div>
 
           <div class="form-control">
             <label class="label">
@@ -155,7 +149,7 @@
 import { ref, onMounted } from 'vue'
 import { habitService } from '@/services/database'
 import type { Habit } from '@/db'
-import { RotateCcw, Plus, MoreVertical, Edit, Trash2 } from 'lucide-vue-next'
+import { RotateCcw, Plus, Edit, Trash2 } from 'lucide-vue-next'
 
 const habits = ref<Habit[]>([])
 const showAddForm = ref(false)
@@ -164,7 +158,6 @@ const editingHabit = ref<Habit | null>(null)
 
 const formData = ref({
   title: '',
-  description: '',
   minFrequencyDays: 1,
   isHighPrio: false
 })
@@ -185,7 +178,6 @@ const editHabit = (habit: Habit) => {
   editingHabit.value = habit
   formData.value = {
     title: habit.title,
-    description: habit.description,
     minFrequencyDays: habit.minFrequencyDays,
     isHighPrio: habit.isHighPrio
   }
@@ -226,7 +218,6 @@ const cancelForm = () => {
   editingHabit.value = null
   formData.value = {
     title: '',
-    description: '',
     minFrequencyDays: 1,
     isHighPrio: false
   }
