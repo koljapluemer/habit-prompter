@@ -32,7 +32,7 @@
                   <div class="font-medium">{{ evaluate.question }}</div>
                 </td>
                 <td>
-                  <div class="badge badge-outline">
+                  <div class="text-sm">
                     Every {{ evaluate.minFrequencyDays }} day{{ evaluate.minFrequencyDays !== 1 ? 's' : '' }}
                   </div>
                 </td>

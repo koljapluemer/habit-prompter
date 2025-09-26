@@ -32,7 +32,7 @@
                   <div class="font-medium">{{ habit.title }}</div>
                 </td>
                 <td>
-                  <div class="badge badge-outline">
+                  <div class="text-sm">
                     Every {{ habit.minFrequencyDays }} day{{ habit.minFrequencyDays !== 1 ? 's' : '' }}
                   </div>
                 </td>
