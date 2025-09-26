@@ -64,8 +64,8 @@
                 </p>
 
                 <div class="flex gap-2 text-sm">
-                  <div class="badge" :class="todo.doInstantly ? 'badge-success' : 'badge-secondary'">
-                    {{ todo.doInstantly ? 'Do Instantly' : 'Schedule' }}
+                  <div v-if="todo.isHighPrio" class="badge badge-error">
+                    High Priority
                   </div>
                   <div v-if="todo.completed && todo.completedAt" class="badge badge-outline">
                     Completed {{ formatDate(todo.completedAt) }}
@@ -167,16 +167,16 @@
 
           <div class="form-control">
             <label class="label cursor-pointer">
-              <span class="label-text">Do instantly (vs schedule for later)</span>
+              <span class="label-text">High Priority</span>
               <input
-                v-model="formData.doInstantly"
+                v-model="formData.isHighPrio"
                 type="checkbox"
-                class="toggle toggle-success"
+                class="toggle toggle-error"
               />
             </label>
             <label class="label">
               <span class="label-text-alt">
-                {{ formData.doInstantly ? 'This task can be completed immediately' : 'This task should be scheduled for later' }}
+                {{ formData.isHighPrio ? 'This task will be prioritized in the queue' : 'This task has normal priority' }}
               </span>
             </label>
           </div>
@@ -211,7 +211,7 @@ const editingTodo = ref<Todo | null>(null)
 const formData = ref({
   title: '',
   description: '',
-  doInstantly: true
+  isHighPrio: false
 })
 
 const filteredTodos = computed(() => {
@@ -252,7 +252,7 @@ const editTodo = (todo: Todo) => {
   formData.value = {
     title: todo.title,
     description: todo.description,
-    doInstantly: todo.doInstantly
+    isHighPrio: todo.isHighPrio
   }
   showEditForm.value = true
 }
@@ -301,7 +301,7 @@ const cancelForm = () => {
   formData.value = {
     title: '',
     description: '',
-    doInstantly: true
+    isHighPrio: false
   }
 }
 

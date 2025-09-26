@@ -29,8 +29,8 @@
                 <div class="badge badge-outline">
                   Every {{ habit.minFrequencyDays }} day{{ habit.minFrequencyDays !== 1 ? 's' : '' }}
                 </div>
-                <div class="badge" :class="habit.doInstantly ? 'badge-primary' : 'badge-secondary'">
-                  {{ habit.doInstantly ? 'Do Instantly' : 'Schedule' }}
+                <div v-if="habit.isHighPrio" class="badge badge-error">
+                  High Priority
                 </div>
               </div>
 
@@ -125,16 +125,16 @@
 
           <div class="form-control">
             <label class="label cursor-pointer">
-              <span class="label-text">Do instantly (vs schedule for later)</span>
+              <span class="label-text">High Priority</span>
               <input
-                v-model="formData.doInstantly"
+                v-model="formData.isHighPrio"
                 type="checkbox"
-                class="toggle toggle-primary"
+                class="toggle toggle-error"
               />
             </label>
             <label class="label">
               <span class="label-text-alt">
-                {{ formData.doInstantly ? 'This habit can be completed immediately' : 'This habit should be scheduled for later' }}
+                {{ formData.isHighPrio ? 'This habit will be prioritized in the queue' : 'This habit has normal priority' }}
               </span>
             </label>
           </div>
@@ -166,7 +166,7 @@ const formData = ref({
   title: '',
   description: '',
   minFrequencyDays: 1,
-  doInstantly: true
+  isHighPrio: false
 })
 
 const loadHabits = async () => {
@@ -187,7 +187,7 @@ const editHabit = (habit: Habit) => {
     title: habit.title,
     description: habit.description,
     minFrequencyDays: habit.minFrequencyDays,
-    doInstantly: habit.doInstantly
+    isHighPrio: habit.isHighPrio
   }
   showEditForm.value = true
 }
@@ -228,7 +228,7 @@ const cancelForm = () => {
     title: '',
     description: '',
     minFrequencyDays: 1,
-    doInstantly: true
+    isHighPrio: false
   }
 }
 

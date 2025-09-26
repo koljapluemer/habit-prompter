@@ -29,6 +29,9 @@
                 <div class="badge badge-outline">
                   Every {{ evaluate.minFrequencyDays }} day{{ evaluate.minFrequencyDays !== 1 ? 's' : '' }}
                 </div>
+                <div v-if="evaluate.isHighPrio" class="badge badge-error">
+                  High Priority
+                </div>
               </div>
 
               <div class="text-sm mt-2 opacity-70">
@@ -120,6 +123,21 @@
             </label>
           </div>
 
+          <div class="form-control">
+            <label class="label cursor-pointer">
+              <span class="label-text">High Priority</span>
+              <input
+                v-model="formData.isHighPrio"
+                type="checkbox"
+                class="toggle toggle-error"
+              />
+            </label>
+            <label class="label">
+              <span class="label-text-alt">
+                {{ formData.isHighPrio ? 'This evaluation will be prioritized in the queue' : 'This evaluation has normal priority' }}
+              </span>
+            </label>
+          </div>
 
           <div class="modal-action">
             <button type="submit" class="btn btn-warning">
@@ -147,7 +165,8 @@ const editingEvaluate = ref<Evaluate | null>(null)
 const formData = ref({
   question: '',
   description: '',
-  minFrequencyDays: 7
+  minFrequencyDays: 7,
+  isHighPrio: false
 })
 
 const loadEvaluates = async () => {
@@ -167,7 +186,8 @@ const editEvaluate = (evaluate: Evaluate) => {
   formData.value = {
     question: evaluate.question,
     description: evaluate.description,
-    minFrequencyDays: evaluate.minFrequencyDays
+    minFrequencyDays: evaluate.minFrequencyDays,
+    isHighPrio: evaluate.isHighPrio
   }
   showEditForm.value = true
 }
@@ -183,15 +203,11 @@ const saveEvaluate = async () => {
   try {
     const evaluateData = {
       ...formData.value,
-      doInstantly: true, // Evaluations are always instant
       createdAt: new Date()
     }
 
     if (editingEvaluate.value) {
-      await evaluateService.update(editingEvaluate.value.id!, {
-        ...formData.value,
-        doInstantly: true
-      })
+      await evaluateService.update(editingEvaluate.value.id!, formData.value)
     } else {
       await evaluateService.create(evaluateData)
     }
@@ -211,7 +227,8 @@ const cancelForm = () => {
   formData.value = {
     question: '',
     description: '',
-    minFrequencyDays: 7
+    minFrequencyDays: 7,
+    isHighPrio: false
   }
 }
 

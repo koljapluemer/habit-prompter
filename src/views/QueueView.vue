@@ -153,7 +153,7 @@ import { queueService, habitService, evaluateService, todoService } from '@/serv
 import type { QueueItem, Habit, Evaluate, Todo } from '@/db'
 import {
   ArrowLeft, Shuffle, RotateCw, RotateCcw, Brain, CheckSquare,
-  Check, Calendar, PartyPopper, Plus, ArrowRight
+  Check, PartyPopper, Plus, ArrowRight
 } from 'lucide-vue-next'
 
 const queueItems = ref<Array<QueueItem & { item?: Habit | Evaluate | Todo }>>([])
@@ -241,13 +241,6 @@ const getLastCompleted = (item: QueueItem & { item?: Habit | Evaluate | Todo }) 
   return (item.item as Habit | Evaluate).lastCompleted
 }
 
-const getDoInstantly = (item: QueueItem & { item?: Habit | Evaluate | Todo }) => {
-  if (!item.item) return true
-  if (item.type === 'habit') return (item.item as Habit).doInstantly
-  if (item.type === 'evaluate') return (item.item as Evaluate).doInstantly
-  if (item.type === 'todo') return (item.item as Todo).doInstantly
-  return true
-}
 
 const formatDate = (date: Date | null | undefined) => {
   if (!date) return 'Never'

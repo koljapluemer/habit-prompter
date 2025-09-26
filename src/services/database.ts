@@ -156,8 +156,17 @@ export const queueService = {
     needingEvaluates.forEach(evaluate => availableItems.push({ type: 'evaluate' as const, item: evaluate }))
     activeTodos.forEach(todo => availableItems.push({ type: 'todo' as const, item: todo }))
 
-    const shuffled = availableItems.sort(() => Math.random() - 0.5)
-    const selected = shuffled.slice(0, neededItems)
+    // Separate high priority and normal priority items
+    const highPriorityItems = availableItems.filter(item => item.item.isHighPrio)
+    const normalPriorityItems = availableItems.filter(item => !item.item.isHighPrio)
+
+    // Shuffle each group separately
+    const shuffledHighPrio = highPriorityItems.sort(() => Math.random() - 0.5)
+    const shuffledNormal = normalPriorityItems.sort(() => Math.random() - 0.5)
+
+    // Prioritize high priority items first, then normal priority items
+    const prioritizedItems = [...shuffledHighPrio, ...shuffledNormal]
+    const selected = prioritizedItems.slice(0, neededItems)
 
     for (const { type, item } of selected) {
       await this.create({
