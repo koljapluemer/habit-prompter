@@ -121,22 +121,19 @@
               <div class="form-control mb-4">
                 <label class="label">
                   <span class="label-text">Daily queue size</span>
-                  <span class="label-text-alt">{{ queueSize }} items per day</span>
+                  <span class="label-text-alt">items per day</span>
                 </label>
                 <input
                   v-model.number="queueSize"
                   @change="updateQueueSize"
-                  type="range"
+                  type="number"
                   min="3"
                   max="15"
-                  class="range range-secondary"
+                  class="input input-bordered w-24"
+                  placeholder="8"
                 />
-                <div class="w-full flex justify-between text-xs px-2 mt-2">
-                  <span>3</span>
-                  <span>5</span>
-                  <span>8</span>
-                  <span>10</span>
-                  <span>15</span>
+                <div class="text-xs text-base-content/70 mt-1">
+                  Choose between 3-15 items per day
                 </div>
               </div>
 
