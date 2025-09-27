@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardView from '../views/DashboardView.vue'
 import QueueView from '../views/QueueView.vue'
-import ManageView from '../views/ManageView.vue'
 import HabitsView from '../views/HabitsView.vue'
 import EvaluateView from '../views/EvaluateView.vue'
 import TodoView from '../views/TodoView.vue'
@@ -12,35 +10,23 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'dashboard',
-      component: DashboardView,
-    },
-    {
-      path: '/queue',
       name: 'queue',
       component: QueueView,
     },
     {
-      path: '/manage',
-      name: 'manage',
-      component: ManageView,
-      children: [
-        {
-          path: 'habits',
-          name: 'manage-habits',
-          component: HabitsView,
-        },
-        {
-          path: 'evaluate',
-          name: 'manage-evaluate',
-          component: EvaluateView,
-        },
-        {
-          path: 'todo',
-          name: 'manage-todo',
-          component: TodoView,
-        },
-      ],
+      path: '/habits',
+      name: 'habits',
+      component: HabitsView,
+    },
+    {
+      path: '/eval',
+      name: 'eval',
+      component: EvaluateView,
+    },
+    {
+      path: '/todos',
+      name: 'todos',
+      component: TodoView,
     },
     {
       path: '/settings',

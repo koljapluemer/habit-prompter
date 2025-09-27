@@ -1,26 +1,20 @@
 <template>
-  <div class="container mx-auto p-6 max-w-4xl">
-    <div class="navbar bg-base-100 rounded-box shadow-lg mb-6">
-      <div class="navbar-start">
-        <router-link to="/" class="btn btn-ghost btn-circle">
-          <ArrowLeft class="h-6 w-6" />
-        </router-link>
-        <div class="flex items-center gap-3 ml-4">
-          <Shuffle class="h-8 w-8 text-primary" />
-          <h1 class="text-3xl font-bold text-primary">Random Queue</h1>
-        </div>
+  <div>
+    <!-- Queue header with refresh button -->
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3">
+        <Shuffle class="h-8 w-8 text-primary" />
+        <h2 class="text-2xl font-bold">Random Queue</h2>
       </div>
-      <div class="navbar-end">
-        <button
-          @click="generateQueue"
-          :disabled="isGenerating"
-          class="btn btn-secondary btn-sm"
-        >
-          <span v-if="isGenerating" class="loading loading-spinner"></span>
-          <RotateCw v-else class="h-4 w-4" />
-          {{ isGenerating ? 'Generating...' : 'Refresh Queue' }}
-        </button>
-      </div>
+      <button
+        @click="generateQueue"
+        :disabled="isGenerating"
+        class="btn btn-secondary btn-sm"
+      >
+        <span v-if="isGenerating" class="loading loading-spinner"></span>
+        <RotateCw v-else class="h-4 w-4" />
+        {{ isGenerating ? 'Generating...' : 'Refresh Queue' }}
+      </button>
     </div>
 
     <!-- Progress Bar -->
@@ -133,7 +127,7 @@
             >
               Generate New Queue
             </button>
-            <router-link to="/manage/habits" class="btn btn-outline">
+            <router-link to="/habits" class="btn btn-outline">
               <Plus class="h-4 w-4" />
               Add Habits
             </router-link>
@@ -150,7 +144,7 @@ import { ref, onMounted } from 'vue'
 import { queueService, habitService, evaluateService, todoService } from '@/services/database'
 import type { QueueItem, Habit, Evaluate, Todo } from '@/db'
 import {
-  ArrowLeft, Shuffle, RotateCw, RotateCcw, Brain, CheckSquare,
+  Shuffle, RotateCw, RotateCcw, Brain, CheckSquare,
   Check, PartyPopper, Plus, ArrowRight
 } from 'lucide-vue-next'
 
