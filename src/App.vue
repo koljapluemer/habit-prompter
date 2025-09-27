@@ -11,6 +11,7 @@ import { RouterView } from 'vue-router'
           <router-link to="/habits" class="btn" :class="{ 'btn-active': $route.name === 'habits' }">Habits</router-link>
           <router-link to="/eval" class="btn" :class="{ 'btn-active': $route.name === 'eval' }">Eval</router-link>
           <router-link to="/todos" class="btn" :class="{ 'btn-active': $route.name === 'todos' }">Todos</router-link>
+          <router-link to="/settings" class="btn" :class="{ 'btn-active': $route.name === 'settings' }">Settings</router-link>
         </div>
       </div>
 
