@@ -28,27 +28,16 @@ export interface Todo {
   completedAt?: Date
 }
 
-export interface QueueItem {
-  id?: number
-  type: 'habit' | 'evaluate' | 'todo'
-  itemId: number
-  scheduledFor: Date
-  completed: boolean
-  response?: string // For evaluation responses
-}
-
 const db = new Dexie('HabitTrackerDB') as Dexie & {
   habits: EntityTable<Habit, 'id'>
   evaluates: EntityTable<Evaluate, 'id'>
   todos: EntityTable<Todo, 'id'>
-  queueItems: EntityTable<QueueItem, 'id'>
 }
 
 db.version(1).stores({
   habits: '++id, title, createdAt, lastCompleted, isHighPrio',
   evaluates: '++id, question, createdAt, lastCompleted, isHighPrio',
-  todos: '++id, title, createdAt, completed, archived, isHighPrio',
-  queueItems: '++id, type, itemId, scheduledFor, completed'
+  todos: '++id, title, createdAt, completed, archived, isHighPrio'
 })
 
 export { db }

@@ -1,4 +1,4 @@
-import { db, type Habit, type Evaluate, type Todo, type QueueItem } from '@/db'
+import { db, type Habit, type Evaluate, type Todo } from '@/db'
 
 interface BackupData {
   version: string
@@ -15,16 +15,12 @@ interface BackupData {
     createdAt: string
     completedAt?: string
   }>
-  queueItems: Array<Omit<QueueItem, 'scheduledFor'> & {
-    scheduledFor: string
-  }>
 }
 
 interface BackupStats {
   habits: number
   evaluates: number
   todos: number
-  queueItems: number
   databaseSize: string
 }
 
@@ -33,10 +29,9 @@ class BackupService {
     const habits = await db.habits.toArray()
     const evaluates = await db.evaluates.toArray()
     const todos = await db.todos.toArray()
-    const queueItems = await db.queueItems.toArray()
 
     const backupData: BackupData = {
-      version: '2.0',
+      version: '3.0',
       timestamp: new Date().toISOString(),
       habits: habits.map(habit => ({
         ...habit,
@@ -52,10 +47,6 @@ class BackupService {
         ...todo,
         createdAt: todo.createdAt.toISOString(),
         completedAt: todo.completedAt?.toISOString()
-      })),
-      queueItems: queueItems.map(queueItem => ({
-        ...queueItem,
-        scheduledFor: queueItem.scheduledFor.toISOString()
       }))
     }
 
@@ -71,11 +62,10 @@ class BackupService {
       }
 
       // Clear existing data
-      await db.transaction('rw', [db.habits, db.evaluates, db.todos, db.queueItems], async () => {
+      await db.transaction('rw', [db.habits, db.evaluates, db.todos], async () => {
         await db.habits.clear()
         await db.evaluates.clear()
         await db.todos.clear()
-        await db.queueItems.clear()
 
         // Import habits
         for (const habit of backupData.habits) {
@@ -135,24 +125,6 @@ class BackupService {
           }
         }
 
-        // Import queue items
-        for (const queueItem of backupData.queueItems) {
-          const { id, ...queueData } = queueItem
-          void id // Ignore unused variable
-
-          try {
-            await db.queueItems.add({
-              type: queueData.type,
-              itemId: queueData.itemId,
-              completed: queueData.completed,
-              scheduledFor: new Date(queueData.scheduledFor),
-              response: queueData.response
-            })
-          } catch (error) {
-            console.error('Failed to import queue item:', queueData, error)
-            throw error
-          }
-        }
       })
 
     } catch (error) {
@@ -199,7 +171,6 @@ class BackupService {
     const habitCount = await db.habits.count()
     const evaluateCount = await db.evaluates.count()
     const todoCount = await db.todos.count()
-    const queueItemCount = await db.queueItems.count()
 
     // Estimate database size
     const sampleData = await this.exportData()
@@ -216,7 +187,6 @@ class BackupService {
       habits: habitCount,
       evaluates: evaluateCount,
       todos: todoCount,
-      queueItems: queueItemCount,
       databaseSize: sizeString
     }
   }
@@ -234,11 +204,9 @@ class BackupService {
       hasHabits: Array.isArray(obj.habits),
       hasEvaluates: Array.isArray(obj.evaluates),
       hasTodos: Array.isArray(obj.todos),
-      hasQueueItems: Array.isArray(obj.queueItems),
       habitsCount: Array.isArray(obj.habits) ? obj.habits.length : 'N/A',
       evaluatesCount: Array.isArray(obj.evaluates) ? obj.evaluates.length : 'N/A',
-      todosCount: Array.isArray(obj.todos) ? obj.todos.length : 'N/A',
-      queueItemsCount: Array.isArray(obj.queueItems) ? obj.queueItems.length : 'N/A'
+      todosCount: Array.isArray(obj.todos) ? obj.todos.length : 'N/A'
     })
 
     if (typeof obj.version !== 'string') {
@@ -259,10 +227,6 @@ class BackupService {
     }
     if (!Array.isArray(obj.todos)) {
       console.error('Missing or invalid todos array')
-      return false
-    }
-    if (!Array.isArray(obj.queueItems)) {
-      console.error('Missing or invalid queueItems array')
       return false
     }
 
@@ -286,14 +250,6 @@ class BackupService {
     for (let i = 0; i < obj.todos.length; i++) {
       if (!this.isValidTodo(obj.todos[i])) {
         console.error(`Invalid todo at index ${i}:`, obj.todos[i])
-        return false
-      }
-    }
-
-    // Validate each queue item
-    for (let i = 0; i < obj.queueItems.length; i++) {
-      if (!this.isValidQueueItem(obj.queueItems[i])) {
-        console.error(`Invalid queue item at index ${i}:`, obj.queueItems[i])
         return false
       }
     }
@@ -371,27 +327,6 @@ class BackupService {
     return isValid
   }
 
-  private isValidQueueItem(queueItem: unknown): queueItem is QueueItem {
-    if (!queueItem || typeof queueItem !== 'object') {
-      console.error('QueueItem is not an object:', queueItem)
-      return false
-    }
-    const obj = queueItem as Record<string, unknown>
-
-    const checks = {
-      type: obj.type === 'habit' || obj.type === 'evaluate' || obj.type === 'todo',
-      itemId: typeof obj.itemId === 'number',
-      completed: typeof obj.completed === 'boolean',
-      scheduledFor: obj.scheduledFor instanceof Date || typeof obj.scheduledFor === 'string'
-    }
-
-    const isValid = Object.values(checks).every(Boolean)
-    if (!isValid) {
-      console.error('Invalid queue item fields:', checks, 'QueueItem data:', obj)
-    }
-
-    return isValid
-  }
 }
 
 export const backupService = new BackupService()
