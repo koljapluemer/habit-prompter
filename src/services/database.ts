@@ -24,10 +24,13 @@ export const habitService = {
 
   async getNeedingCompletion(): Promise<Habit[]> {
     const habits = await db.habits.toArray()
-    const now = new Date()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     return habits.filter(habit => {
       if (!habit.lastCompleted) return true
-      const daysSinceCompletion = Math.floor((now.getTime() - habit.lastCompleted.getTime()) / (1000 * 60 * 60 * 24))
+      const lastCompletedDate = new Date(habit.lastCompleted)
+      lastCompletedDate.setHours(0, 0, 0, 0)
+      const daysSinceCompletion = Math.floor((today.getTime() - lastCompletedDate.getTime()) / (1000 * 60 * 60 * 24))
       return daysSinceCompletion >= habit.minFrequencyDays
     })
   }
@@ -57,10 +60,13 @@ export const evaluateService = {
 
   async getNeedingCompletion(): Promise<Evaluate[]> {
     const evaluates = await db.evaluates.toArray()
-    const now = new Date()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     return evaluates.filter(evaluate => {
       if (!evaluate.lastCompleted) return true
-      const daysSinceCompletion = Math.floor((now.getTime() - evaluate.lastCompleted.getTime()) / (1000 * 60 * 60 * 24))
+      const lastCompletedDate = new Date(evaluate.lastCompleted)
+      lastCompletedDate.setHours(0, 0, 0, 0)
+      const daysSinceCompletion = Math.floor((today.getTime() - lastCompletedDate.getTime()) / (1000 * 60 * 60 * 24))
       return daysSinceCompletion >= evaluate.minFrequencyDays
     })
   }
