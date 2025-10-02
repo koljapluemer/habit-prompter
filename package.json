@@ -19,6 +19,8 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
     "dexie": "^4.2.0",
+    "dexie-cloud-addon": "^4.2.1",
+    "dexie-to-cloud-backup": "file:../dexie-to-cloud-backup",
     "lucide-vue-next": "^0.544.0",
     "tailwindcss": "^4.1.13",
     "vue": "^3.5.18",
