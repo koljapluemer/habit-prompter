@@ -5,20 +5,20 @@ export const habitService = {
     return await db.habits.orderBy('createdAt').reverse().toArray()
   },
 
-  async create(habit: Omit<Habit, 'id'>): Promise<number> {
+  async create(habit: Omit<Habit, 'id'>): Promise<string> {
     const id = await db.habits.add(habit)
-    return id as number
+    return id as string
   },
 
-  async update(id: number, changes: Partial<Habit>): Promise<void> {
+  async update(id: string, changes: Partial<Habit>): Promise<void> {
     await db.habits.update(id, changes)
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await db.habits.delete(id)
   },
 
-  async markCompleted(id: number): Promise<void> {
+  async markCompleted(id: string): Promise<void> {
     await db.habits.update(id, { lastCompleted: new Date() })
   },
 
@@ -41,20 +41,20 @@ export const evaluateService = {
     return await db.evaluates.orderBy('createdAt').reverse().toArray()
   },
 
-  async create(evaluate: Omit<Evaluate, 'id'>): Promise<number> {
+  async create(evaluate: Omit<Evaluate, 'id'>): Promise<string> {
     const id = await db.evaluates.add(evaluate)
-    return id as number
+    return id as string
   },
 
-  async update(id: number, changes: Partial<Evaluate>): Promise<void> {
+  async update(id: string, changes: Partial<Evaluate>): Promise<void> {
     await db.evaluates.update(id, changes)
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await db.evaluates.delete(id)
   },
 
-  async markCompleted(id: number): Promise<void> {
+  async markCompleted(id: string): Promise<void> {
     await db.evaluates.update(id, { lastCompleted: new Date() })
   },
 
@@ -85,24 +85,24 @@ export const todoService = {
     return await db.todos.where('completed').equals(1).toArray()
   },
 
-  async create(todo: Omit<Todo, 'id'>): Promise<number> {
+  async create(todo: Omit<Todo, 'id'>): Promise<string> {
     const id = await db.todos.add(todo)
-    return id as number
+    return id as string
   },
 
-  async update(id: number, changes: Partial<Todo>): Promise<void> {
+  async update(id: string, changes: Partial<Todo>): Promise<void> {
     await db.todos.update(id, changes)
   },
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await db.todos.delete(id)
   },
 
-  async markCompleted(id: number): Promise<void> {
+  async markCompleted(id: string): Promise<void> {
     await db.todos.update(id, { completed: true, completedAt: new Date() })
   },
 
-  async markArchived(id: number): Promise<void> {
+  async markArchived(id: string): Promise<void> {
     await db.todos.update(id, { archived: true })
   }
 }

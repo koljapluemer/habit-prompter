@@ -168,7 +168,7 @@ const hasItems = ref(false)
 const COOLDOWN_MINUTES = 10
 const cooldownData = ref<Record<string, number>>({}) // itemKey -> timestamp
 
-const getItemKey = (item: { type: string, item: { id?: number } }) => {
+const getItemKey = (item: { type: string, item: { id?: string } }) => {
   return `${item.type}-${item.item.id}`
 }
 
@@ -197,7 +197,7 @@ const saveCooldownData = () => {
   localStorage.setItem(storageKey, JSON.stringify(cooldownData.value))
 }
 
-const isItemInCooldown = (item: { type: string, item: { id?: number } }) => {
+const isItemInCooldown = (item: { type: string, item: { id?: string } }) => {
   const itemKey = getItemKey(item)
   const lastSeen = cooldownData.value[itemKey]
   if (!lastSeen) return false
@@ -207,7 +207,7 @@ const isItemInCooldown = (item: { type: string, item: { id?: number } }) => {
   return now < cooldownEnd
 }
 
-const addItemToCooldown = (item: { type: string, item: { id?: number } }) => {
+const addItemToCooldown = (item: { type: string, item: { id?: string } }) => {
   const itemKey = getItemKey(item)
   cooldownData.value[itemKey] = Date.now()
   saveCooldownData()

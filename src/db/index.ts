@@ -33,40 +33,20 @@ const db = new Dexie('HabitTrackerDB', { addons: [dexieCloud] }) as Dexie & {
   habits: EntityTable<Habit, 'id'>
   evaluates: EntityTable<Evaluate, 'id'>
   todos: EntityTable<Todo, 'id'>
-  cloud: any
+  cloud: {
+    configure: (config: { databaseUrl: string; requireAuth: boolean; customLoginGui: boolean }) => void
+    currentUser: { email?: string } | null
+    login: () => Promise<void>
+    logout: () => Promise<void>
+    userInteraction: { subscribe: (callback: (interaction: unknown) => void) => { unsubscribe: () => void } }
+  }
 }
 
+// Dexie Cloud requires string IDs, so we start fresh
 db.version(1).stores({
-  habits: '++id, title, createdAt, lastCompleted, isHighPrio',
-  evaluates: '++id, question, createdAt, lastCompleted, isHighPrio',
-  todos: '++id, title, createdAt, completed, archived, isHighPrio'
-})
-
-// Version 2: Migrate to Dexie Cloud with string IDs
-db.version(2).stores({
   habits: '@id, title, createdAt, lastCompleted, isHighPrio',
   evaluates: '@id, question, createdAt, lastCompleted, isHighPrio',
   todos: '@id, title, createdAt, completed, archived, isHighPrio'
-}).upgrade(async tx => {
-  // Migration function to convert numeric IDs to string IDs
-  const migrateTable = async (table: any) => {
-    const items = await table.toArray()
-    await table.clear()
-
-    // Re-add items without id (let @id auto-generate string IDs)
-    const itemsWithoutId = items.map((item: any) => {
-      const { id, ...rest } = item
-      return rest
-    })
-
-    await table.bulkAdd(itemsWithoutId)
-  }
-
-  await Promise.all([
-    migrateTable(tx.table('habits')),
-    migrateTable(tx.table('evaluates')),
-    migrateTable(tx.table('todos'))
-  ])
 })
 
 // Configure Dexie Cloud

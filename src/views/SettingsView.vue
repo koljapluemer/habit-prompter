@@ -138,11 +138,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { db } from '@/db'
 import { habitService, evaluateService, todoService } from '@/services/database'
 import {
-  ArrowLeft, Settings, RotateCcw, Info, CheckCircle, Cloud,
+  ArrowLeft, Settings, Info, CheckCircle, Cloud,
   Shuffle, Smartphone
 } from 'lucide-vue-next'
 
@@ -177,14 +177,6 @@ const loadStats = async () => {
   }
 }
 
-const loadCloudStatus = () => {
-  const currentUser = db.cloud.currentUser
-  isCloudSynced.value = !!currentUser && !!currentUser.email
-  if (currentUser?.email) {
-    userEmail.value = currentUser.email
-  }
-}
-
 const loadQueueSize = () => {
   const saved = localStorage.getItem('habit-tracker-queue-size')
   if (saved) {
@@ -196,11 +188,16 @@ const updateQueueSize = () => {
   localStorage.setItem('habit-tracker-queue-size', queueSize.value.toString())
 }
 
+// Subscribe to currentUser observable
+const userSubscription = db.cloud.currentUser.subscribe(user => {
+  isCloudSynced.value = user?.isLoggedIn || false
+  userEmail.value = user?.email || ''
+})
+
 const enableCloudSync = async () => {
   isLoading.value = true
   try {
     await db.cloud.login()
-    loadCloudStatus()
   } catch (error) {
     console.error('Failed to enable cloud sync:', error)
     alert('Failed to enable cloud sync')
@@ -212,7 +209,6 @@ const disableCloudSync = async () => {
   if (confirm('Are you sure you want to disable cloud sync? Your data will remain on this device but will no longer sync.')) {
     try {
       await db.cloud.logout()
-      loadCloudStatus()
     } catch (error) {
       console.error('Failed to disable cloud sync:', error)
       alert('Failed to disable cloud sync')
@@ -222,7 +218,10 @@ const disableCloudSync = async () => {
 
 onMounted(() => {
   loadStats()
-  loadCloudStatus()
   loadQueueSize()
+})
+
+onUnmounted(() => {
+  userSubscription.unsubscribe()
 })
 </script>
