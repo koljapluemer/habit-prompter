@@ -1,18 +1,32 @@
-# time-invested
+# Local-First Habits and Checks
 
-This template should help get you started developing with Vue 3 in Vite.
+A local-first habit tracker and task management app with a queue-based daily workflow. Built with Vue 3, TypeScript, and Dexie Cloud for optional sync across devices.
+
+## Features
+
+- **Queue-based workflow**: Daily queue presents habits, evaluations, and todos one at a time
+- **Habit tracking**: Create recurring habits with customizable frequency (daily, every N days)
+- **Self-evaluations**: Schedule reflection questions with text responses
+- **Todo management**: Track tasks with progress updates
+- **Priority system**: High-priority items appear first in the queue
+- **Daily limits**: Set a daily completion target to maintain sustainable productivity
+- **Smart cooldowns**: Skip items temporarily (10-minute cooldown) to avoid repetition
+- **Local-first**: All data stored locally with IndexedDB via Dexie
+- **Optional sync**: Dexie Cloud integration for cross-device synchronization
+
+## Tech Stack
+
+- Vue 3 with TypeScript
+- Vite for build tooling
+- Dexie.js for IndexedDB database
+- Dexie Cloud for optional sync
+- TailwindCSS 4 + DaisyUI for styling
+- Vue Router for navigation
+- Lucide icons
 
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
 
 ## Project Setup
 

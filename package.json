@@ -1,6 +1,7 @@
 {
-  "name": "time-invested",
-  "version": "0.0.0",
+  "name": "local-first-habits-and-checks",
+  "version": "1.0.0",
+  "description": "A local-first habit tracker and task management app with queue-based daily workflow",
   "private": true,
   "type": "module",
   "engines": {
