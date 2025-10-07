@@ -31,3 +31,4 @@ coverage
 
 .env
 dexie-cloud.key
+dexie-cloud.json
