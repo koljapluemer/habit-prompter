@@ -1,38 +1,24 @@
 import Dexie, { type EntityTable } from 'dexie'
 import dexieCloud from 'dexie-cloud-addon'
 
-export interface Habit {
-  id?: string
-  title: string
-  minFrequencyDays: number
-  isHighPrio: boolean
-  lastCompleted?: Date
-  createdAt: Date
-}
+export type Modality = 'do' | 'schedule' | 'answer' | 'yes-no' | 'one-to-ten'
 
-export interface Evaluate {
+export interface Action {
   id?: string
-  question: string
-  minFrequencyDays: number
+  content: string
+  modality: Modality
+  intervalDays: number
   isHighPrio: boolean
-  lastCompleted?: Date
-  createdAt: Date
-}
-
-export interface Todo {
-  id?: string
-  title: string
-  isHighPrio: boolean
-  completed: boolean
+  isFinishable: boolean
+  isCompleted: boolean
   archived: boolean
   createdAt: Date
+  lastCompleted?: Date
   completedAt?: Date
 }
 
 const db = new Dexie('HabitTrackerDB', { addons: [dexieCloud] }) as Dexie & {
-  habits: EntityTable<Habit, 'id'>
-  evaluates: EntityTable<Evaluate, 'id'>
-  todos: EntityTable<Todo, 'id'>
+  actions: EntityTable<Action, 'id'>
   cloud: {
     configure: (config: { databaseUrl: string; requireAuth: boolean; customLoginGui: boolean }) => void
     currentUser: { email?: string } | null
@@ -44,15 +30,13 @@ const db = new Dexie('HabitTrackerDB', { addons: [dexieCloud] }) as Dexie & {
 
 // Dexie Cloud requires string IDs, so we start fresh
 db.version(1).stores({
-  habits: '@id, title, createdAt, lastCompleted, isHighPrio',
-  evaluates: '@id, question, createdAt, lastCompleted, isHighPrio',
-  todos: '@id, title, createdAt, completed, archived, isHighPrio'
+  actions: '@id, createdAt, lastCompleted, isHighPrio, isFinishable, isCompleted, archived'
 })
 
 // Configure Dexie Cloud
 db.cloud.configure({
   databaseUrl: import.meta.env.VITE_DEXIE_CLOUD_URL,
-  requireAuth: false  // Make login optional
+  requireAuth: false // Make login optional
 })
 
 export { db }

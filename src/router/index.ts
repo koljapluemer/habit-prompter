@@ -1,37 +1,55 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import QueueView from '../views/QueueView.vue'
-import HabitsView from '../views/HabitsView.vue'
-import EvaluateView from '../views/EvaluateView.vue'
-import TodoView from '../views/TodoView.vue'
-import SettingsView from '../views/SettingsView.vue'
+import MainView from '../views/MainView.vue'
+import MenuView from '../views/MenuView.vue'
+import ActionListView from '../views/ActionListView.vue'
+import ActionDetailView from '../views/ActionDetailView.vue'
+import AddActionView from '../views/AddActionView.vue'
+import EditActionView from '../views/EditActionView.vue'
+import AboutView from '../views/AboutView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'queue',
-      component: QueueView,
+      name: 'main',
+      component: MainView,
     },
     {
-      path: '/habits',
-      name: 'habits',
-      component: HabitsView,
+      path: '/menu',
+      name: 'menu',
+      component: MenuView,
     },
     {
-      path: '/eval',
-      name: 'eval',
-      component: EvaluateView,
+      path: '/actions',
+      name: 'list',
+      component: ActionListView,
     },
     {
-      path: '/todos',
-      name: 'todos',
-      component: TodoView,
+      path: '/actions/new',
+      name: 'add-action',
+      component: AddActionView,
     },
     {
-      path: '/settings',
-      name: 'settings',
-      component: SettingsView,
+      path: '/actions/:id',
+      name: 'action-detail',
+      component: ActionDetailView,
+      props: true,
+    },
+    {
+      path: '/actions/:id/edit',
+      name: 'edit-action',
+      component: EditActionView,
+      props: true,
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: AboutView,
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/',
     },
   ],
 })
