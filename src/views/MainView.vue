@@ -46,15 +46,15 @@
         </button>
 
         <button v-if="currentAction.modality === 'yes-no'" class="terminal-button"
-          @click="completeYesNo(currentAction, 'no')">
+          @click="completeYesNo(currentAction)">
           No
         </button>
         <button v-if="currentAction.modality === 'yes-no'" class="terminal-button"
-          @click="completeYesNo(currentAction, 'kind-of')">
+          @click="completeYesNo(currentAction)">
           Kind Of
         </button>
         <button v-if="currentAction.modality === 'yes-no'" class="terminal-button"
-          @click="completeYesNo(currentAction, 'yes')">
+          @click="completeYesNo(currentAction)">
           Yes
         </button>
 
@@ -324,7 +324,7 @@ const markDone = async (action: Action) => {
   }
 }
 
-const completeYesNo = async (action: Action, _answer: 'no' | 'kind-of' | 'yes') => {
+const completeYesNo = async (action: Action) => {
   await handleCompletion(action)
   if (action.isFinishable) {
     finishPromptAction.value = action

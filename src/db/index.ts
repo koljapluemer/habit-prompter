@@ -36,7 +36,8 @@ db.version(1).stores({
 // Configure Dexie Cloud
 db.cloud.configure({
   databaseUrl: import.meta.env.VITE_DEXIE_CLOUD_URL,
-  requireAuth: false // Make login optional
+  requireAuth: false, // Make login optional
+  customLoginGui: true // Use our custom login GUI in SettingsView
 })
 
 export { db }

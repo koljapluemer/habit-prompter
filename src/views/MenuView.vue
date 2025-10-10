@@ -9,6 +9,7 @@
       <RouterLink to="/" class="terminal-button">Main</RouterLink>
       <RouterLink to="/actions" class="terminal-button">List</RouterLink>
       <RouterLink to="/actions/new" class="terminal-button">Add Action</RouterLink>
+      <RouterLink to="/settings" class="terminal-button">Settings</RouterLink>
       <RouterLink to="/about" class="terminal-button">About</RouterLink>
     </div>
   </div>
