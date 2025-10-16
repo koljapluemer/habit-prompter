@@ -37,16 +37,18 @@ a {
 }
 
 .app-shell {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--background);
   padding: 3rem 1.5rem;
+  overflow: hidden;
 }
 
 .terminal {
   width: min(960px, 100%);
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -56,6 +58,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  height: 100%;
+  overflow: hidden;
 }
 
 .line {
@@ -166,6 +170,9 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .list-entry {
