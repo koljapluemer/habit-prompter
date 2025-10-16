@@ -4,22 +4,11 @@
     <p v-if="displayedAction" class="line">
       <span class="prompt-symbol">&gt;</span>
       <span class="line-text">{{ displayedAction.content }}</span>
-      <span v-if="displayedAction.isHighPrio" class="flag">HIGH</span>
     </p>
 
     <p v-else class="line">
       <span class="prompt-symbol">&gt;</span>
       <span class="line-text">{{ statusMessage }}</span>
-    </p>
-
-    <p v-if="infoAction && infoAction.intervalDays > 1" class="line info">
-      <span class="prompt-symbol">&gt;</span>
-      <span class="line-text">Interval: every {{ infoAction.intervalDays }} days</span>
-    </p>
-
-    <p v-if="lastCompletedInfo" class="line info">
-      <span class="prompt-symbol">&gt;</span>
-      <span class="line-text">Last done: {{ lastCompletedInfo }}</span>
     </p>
 
     <div v-if="currentAction && !finishPromptAction" class="interaction">
@@ -110,7 +99,6 @@ const cooldownData = ref<Record<string, number>>({})
 const notTodayData = ref<Record<string, boolean>>({})
 
 const displayedAction = computed(() => finishPromptAction.value ?? currentAction.value)
-const infoAction = computed(() => displayedAction.value)
 
 const requiresTextInput = computed(() => {
   const action = currentAction.value
@@ -144,16 +132,6 @@ const showDoneButton = computed(() => {
   const action = currentAction.value
   if (!action) return false
   return action.modality !== 'yes-no'
-})
-
-const lastCompletedInfo = computed(() => {
-  const action = displayedAction.value
-  if (!action?.lastCompleted) return ''
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(action.lastCompleted))
 })
 
 const statusMessage = computed(() => {
