@@ -5,14 +5,21 @@
       <span class="line-text">Actions</span>
     </p>
 
-    <div v-if="actions.length > 0" class="line search-line">
-      <label class="line-text">Search</label>
-      <input
-        v-model="searchQuery"
-        type="text"
-        class="terminal-input"
-        placeholder="filter actions..."
-      />
+    <div v-if="actions.length > 0" class="input-block">
+      <p class="line">
+        <span class="line-text">Search</span>
+      </p>
+      <div class="input-wrapper">
+        <span class="prompt-symbol">&gt;</span>
+        <input
+          v-model="searchQuery"
+          type="text"
+          class="line-input"
+          placeholder="filter actions..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
     </div>
 
     <p v-if="actions.length === 0" class="line info">
