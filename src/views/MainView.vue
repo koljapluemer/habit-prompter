@@ -72,8 +72,7 @@
 
     <div class="button-row nav-row" :class="{ stacked: isNarrow }">
       <RouterLink to="/menu" class="terminal-button">Menu</RouterLink>
-      <RouterLink to="/actions" class="terminal-button">List</RouterLink>
-      <RouterLink to="/actions/new" class="terminal-button">Add</RouterLink>
+      <RouterLink v-if="displayedAction" :to="`/actions/${displayedAction.id}`" class="terminal-button">View</RouterLink>
     </div>
   </div>
 </template>
