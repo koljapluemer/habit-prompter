@@ -8,41 +8,6 @@
     <div class="settings-section">
       <p class="line">
         <span class="prompt-symbol">&gt;</span>
-        <span class="line-text">Daily Action Limit</span>
-      </p>
-
-      <p class="line info">
-        <span class="prompt-symbol">&gt;</span>
-        <span class="line-text">Current: {{ dailyLimit }}</span>
-      </p>
-
-      <div class="input-block">
-        <div class="input-wrapper">
-          <span class="prompt-symbol">&gt;</span>
-          <input
-            v-model="dailyLimitInput"
-            class="line-input"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="Enter new limit"
-            @input="onDailyLimitInput"
-          />
-        </div>
-        <div class="button-row" :class="{ stacked: isNarrow }">
-          <button
-            class="terminal-button"
-            :class="{ disabled: !dailyLimitValid }"
-            :disabled="!dailyLimitValid"
-            @click="saveDailyLimit"
-          >
-            Save
-          </button>
-        </div>
-      </div>
-
-      <p class="line">
-        <span class="prompt-symbol">&gt;</span>
         <span class="line-text">Sync Status:</span>
       </p>
 
@@ -153,10 +118,6 @@ const userInteraction = ref<DXCUserInteraction | null>(null)
 const inputParams = ref<Record<string, string>>({})
 const isNarrow = ref(false)
 
-const dailyLimit = ref(8)
-const dailyLimitInput = ref('')
-const dailyLimitValid = ref(false)
-
 let interactionSubscription: { unsubscribe: () => void } | null = null
 
 const isLoggedIn = computed(() => {
@@ -210,35 +171,6 @@ const cancelInteraction = () => {
   inputParams.value = {}
 }
 
-const loadDailyLimit = () => {
-  const saved = localStorage.getItem('habit-tracker-queue-size')
-  dailyLimit.value = saved ? parseInt(saved, 10) : 8
-}
-
-const onDailyLimitInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const digits = target.value.replace(/[^0-9]/g, '')
-  if (!digits) {
-    dailyLimitInput.value = ''
-    dailyLimitValid.value = false
-    target.value = ''
-    return
-  }
-  const numeric = parseInt(digits, 10)
-  dailyLimitInput.value = String(numeric)
-  dailyLimitValid.value = numeric >= 1
-  target.value = dailyLimitInput.value
-}
-
-const saveDailyLimit = () => {
-  if (!dailyLimitValid.value) return
-  const newLimit = parseInt(dailyLimitInput.value, 10)
-  localStorage.setItem('habit-tracker-queue-size', String(newLimit))
-  dailyLimit.value = newLimit
-  dailyLimitInput.value = ''
-  dailyLimitValid.value = false
-}
-
 const updateCurrentUser = () => {
   currentUser.value = db.cloud.currentUser
   currentUserId.value = db.cloud.currentUserId
@@ -246,20 +178,23 @@ const updateCurrentUser = () => {
 
 const exportData = async () => {
   try {
-    // Fetch all actions from the database
-    const actions = await db.actions.toArray()
+    // Fetch all entities from the database
+    const { entityService } = await import('@/services/database')
+    const entities = await entityService.getAllEntities()
 
     // Create export object with metadata
     const exportData = {
       exportDate: new Date().toISOString(),
-      version: '1.0',
-      dailyLimit: dailyLimit.value,
-      actions: actions.map(action => ({
-        ...action,
+      version: '2.0',
+      entities: entities.map(entity => ({
+        ...entity,
         // Convert dates to ISO strings for JSON serialization
-        createdAt: action.createdAt?.toISOString(),
-        lastCompleted: action.lastCompleted?.toISOString(),
-        completedAt: action.completedAt?.toISOString()
+        createdAt: entity.createdAt?.toISOString(),
+        lastShownAt: entity.lastShownAt?.toISOString(),
+        answers: entity.answers.map(answer => ({
+          ...answer,
+          timestamp: answer.timestamp.toISOString()
+        }))
       }))
     }
 
@@ -283,9 +218,6 @@ const exportData = async () => {
 onMounted(() => {
   handleResize()
   window.addEventListener('resize', handleResize)
-
-  // Load daily limit setting
-  loadDailyLimit()
 
   // Subscribe to current user changes
   updateCurrentUser()

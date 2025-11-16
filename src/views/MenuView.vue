@@ -8,7 +8,7 @@
     <div class="button-row stacked">
       <RouterLink to="/" class="terminal-button">Main</RouterLink>
       <RouterLink to="/actions" class="terminal-button">List</RouterLink>
-      <RouterLink to="/actions/new" class="terminal-button">Add Action</RouterLink>
+      <RouterLink to="/entities/new" class="terminal-button">Add Entity</RouterLink>
       <RouterLink to="/settings" class="terminal-button">Settings</RouterLink>
       <RouterLink to="/about" class="terminal-button">About</RouterLink>
     </div>

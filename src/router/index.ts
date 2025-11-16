@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainView from '../views/MainView.vue'
 import MenuView from '../views/MenuView.vue'
-import ActionListView from '../views/ActionListView.vue'
-import ActionDetailView from '../views/ActionDetailView.vue'
-import AddActionView from '../views/AddActionView.vue'
-import EditActionView from '../views/EditActionView.vue'
+import EntityListView from '../views/EntityListView.vue'
+import EntityDetailView from '../views/EntityDetailView.vue'
+import AddEntityView from '../views/AddEntityView.vue'
+import EditEntityView from '../views/EditEntityView.vue'
 import AboutView from '../views/AboutView.vue'
 import SettingsView from '../views/SettingsView.vue'
 
@@ -23,25 +23,41 @@ const router = createRouter({
     },
     {
       path: '/actions',
-      name: 'list',
-      component: ActionListView,
+      name: 'entity-list',
+      component: EntityListView,
+    },
+    {
+      path: '/entities',
+      redirect: '/actions',
+    },
+    {
+      path: '/entities/new',
+      name: 'add-entity',
+      component: AddEntityView,
     },
     {
       path: '/actions/new',
-      name: 'add-action',
-      component: AddActionView,
+      redirect: '/entities/new',
+    },
+    {
+      path: '/entities/:id',
+      name: 'entity-detail',
+      component: EntityDetailView,
+      props: true,
     },
     {
       path: '/actions/:id',
-      name: 'action-detail',
-      component: ActionDetailView,
+      redirect: to => `/entities/${to.params.id}`,
+    },
+    {
+      path: '/entities/:id/edit',
+      name: 'edit-entity',
+      component: EditEntityView,
       props: true,
     },
     {
       path: '/actions/:id/edit',
-      name: 'edit-action',
-      component: EditActionView,
-      props: true,
+      redirect: to => `/entities/${to.params.id}/edit`,
     },
     {
       path: '/about',
