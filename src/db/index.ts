@@ -133,6 +133,19 @@ export interface DailyTaskRepeatedDelayedByDays {
 }
 
 // ============================================================================
+// Task of the Day
+// ============================================================================
+
+export interface TaskOfTheDay {
+  id?: string
+  date: string // yyyy-mm-dd format
+  taskId: string
+  taskType: EntityType
+  selectedAt: Date
+  completedAt?: Date
+}
+
+// ============================================================================
 // Union Type for All Entities
 // ============================================================================
 
@@ -161,6 +174,7 @@ const db = new Dexie('HabitTrackerDB', { addons: [dexieCloud] }) as Dexie & {
   dailyTasksRepeated: EntityTable<DailyTaskRepeated, 'id'>
   dailyTasksRepeatedDelayedUntil: EntityTable<DailyTaskRepeatedDelayedUntil, 'id'>
   dailyTasksRepeatedDelayedByDays: EntityTable<DailyTaskRepeatedDelayedByDays, 'id'>
+  taskOfTheDay: EntityTable<TaskOfTheDay, 'id'>
   cloud: {
     configure: (config: { databaseUrl: string; requireAuth: boolean; customLoginGui: boolean }) => void
     currentUser: { email?: string } | null
@@ -181,6 +195,20 @@ db.version(2).stores({
   dailyTasksRepeated: '@id, createdAt, lastShownAt',
   dailyTasksRepeatedDelayedUntil: '@id, createdAt, lastShownAt, startAtDate',
   dailyTasksRepeatedDelayedByDays: '@id, createdAt, lastShownAt, startInDays'
+})
+
+// Version 3: Add task-of-the-day table
+db.version(3).stores({
+  promptsText: '@id, createdAt, lastShownAt',
+  promptsTextHighPrio: '@id, createdAt, lastShownAt',
+  promptsYesOrNo: '@id, createdAt, lastShownAt',
+  dailyTasksOnce: '@id, createdAt, lastShownAt, isDone',
+  dailyTasksOnceDelayedUntil: '@id, createdAt, lastShownAt, isDone, startAtDate',
+  dailyTasksOnceDelayedByDays: '@id, createdAt, lastShownAt, isDone, startInDays',
+  dailyTasksRepeated: '@id, createdAt, lastShownAt',
+  dailyTasksRepeatedDelayedUntil: '@id, createdAt, lastShownAt, startAtDate',
+  dailyTasksRepeatedDelayedByDays: '@id, createdAt, lastShownAt, startInDays',
+  taskOfTheDay: '@id, date'
 })
 
 // Configure Dexie Cloud

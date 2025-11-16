@@ -25,3 +25,29 @@ export const parseYYMMDD = (dateStr: string): Date | null => {
   const date = new Date(year, month, day)
   return isNaN(date.getTime()) ? null : date
 }
+
+/**
+ * Get the "habit day" for a given timestamp, with 4am cutoff.
+ * Days start at 4am and end at 3:59:59am the next day.
+ */
+export const getHabitDay = (date: Date): Date => {
+  const adjusted = new Date(date)
+
+  // If it's before 4am, consider it the previous day
+  if (adjusted.getHours() < 4) {
+    adjusted.setDate(adjusted.getDate() - 1)
+  }
+
+  // Normalize to start of day (midnight)
+  return startOfDay(adjusted)
+}
+
+/**
+ * Format a date as yyyy-mm-dd for storage keys
+ */
+export const formatDateKey = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
