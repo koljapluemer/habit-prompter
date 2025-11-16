@@ -1,7 +1,7 @@
 <template>
   <div class="screen" v-if="entity">
     <p class="line">
-      <span class="line-text">EDIT {{ getDisplayName(entity.type) }}</span>
+      <span class="line-text uppercase">edit {{ getDisplayName(entity.type) }}</span>
     </p>
 
     <component
@@ -19,7 +19,7 @@
 
   <div v-else class="screen">
     <p class="line">
-      <span class="line-text">ENTITY NOT FOUND</span>
+      <span class="line-text uppercase">entity not found</span>
     </p>
     <div class="button-row nav-row">
       <RouterLink to="/actions" class="terminal-button">back to list</RouterLink>

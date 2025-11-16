@@ -1,7 +1,7 @@
 <template>
   <div class="daily-task-once-delayed-by-days-form">
     <p class="line">
-      <span class="line-text">TASK CONTENT</span>
+      <span class="line-text uppercase">task content</span>
     </p>
     <div class="input-wrapper">
       <span class="prompt-symbol">&gt;</span>
@@ -17,7 +17,7 @@
 
     <DaysDelayInput
       v-model="formData.startInDays"
-      label="START IN (DAYS)"
+      label="start in (days)"
     />
 
     <div class="button-row">

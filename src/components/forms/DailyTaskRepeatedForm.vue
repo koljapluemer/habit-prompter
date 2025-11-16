@@ -1,7 +1,7 @@
 <template>
   <div class="daily-task-repeated-form">
     <p class="line">
-      <span class="line-text">TASK CONTENT</span>
+      <span class="line-text uppercase">task content</span>
     </p>
     <div class="input-wrapper">
       <span class="prompt-symbol">&gt;</span>
@@ -17,7 +17,7 @@
 
     <IntervalInput
       v-model="formData.interval"
-      label="INTERVAL (DAYS)"
+      label="interval (days)"
     />
 
     <div class="button-row">

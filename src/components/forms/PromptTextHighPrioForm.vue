@@ -1,7 +1,7 @@
 <template>
   <div class="prompt-text-high-prio-form">
     <p class="line">
-      <span class="line-text">PROMPT (HIGH PRIORITY - SHOWS DAILY)</span>
+      <span class="line-text uppercase">prompt (high priority - shows daily)</span>
     </p>
     <div class="input-wrapper">
       <span class="prompt-symbol">&gt;</span>

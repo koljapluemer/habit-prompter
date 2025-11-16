@@ -1,7 +1,7 @@
 <template>
   <div class="date-input">
     <p v-if="label" class="line">
-      <span class="line-text">{{ label }} (YY-MM-DD)</span>
+      <span class="line-text uppercase">{{ label }} (yy-mm-dd)</span>
     </p>
     <div class="input-wrapper">
       <span class="prompt-symbol">&gt;</span>
@@ -16,7 +16,7 @@
       />
     </div>
     <p v-if="error" class="line">
-      <span class="line-text">{{ error }}</span>
+      <span class="line-text uppercase">{{ error }}</span>
     </p>
   </div>
 </template>
@@ -46,7 +46,7 @@ const error = ref('')
 const validateDate = (value: string): boolean => {
   const regex = /^\d{2}-\d{2}-\d{2}$/
   if (!regex.test(value)) {
-    error.value = 'USE FORMAT YY-MM-DD'
+    error.value = 'use format yy-mm-dd'
     return false
   }
 
@@ -56,12 +56,12 @@ const validateDate = (value: string): boolean => {
   const day = parseInt(parts[2], 10)
 
   if (month < 1 || month > 12) {
-    error.value = 'MONTH MUST BE 01-12'
+    error.value = 'month must be 01-12'
     return false
   }
 
   if (day < 1 || day > 31) {
-    error.value = 'DAY MUST BE 01-31'
+    error.value = 'day must be 01-31'
     return false
   }
 

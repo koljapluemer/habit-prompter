@@ -1,7 +1,7 @@
 <template>
   <div class="screen">
     <p class="line">
-      <span class="line-text">ADD ENTITY</span>
+      <span class="line-text uppercase">add entity</span>
     </p>
 
     <div v-if="step === 1">

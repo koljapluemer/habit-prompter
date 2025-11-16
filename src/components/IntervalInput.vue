@@ -1,7 +1,7 @@
 <template>
   <div class="interval-input">
     <p v-if="label" class="line">
-      <span class="line-text">{{ label }}</span>
+      <span class="line-text uppercase">{{ label }}</span>
     </p>
     <div class="input-wrapper">
       <span class="prompt-symbol">&gt;</span>

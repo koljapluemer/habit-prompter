@@ -73,6 +73,10 @@ a {
   flex: 1;
 }
 
+.line-text.uppercase {
+  text-transform: uppercase;
+}
+
 .prompt-symbol {
   color: var(--foreground);
   animation: blink 2s ease-in-out infinite;

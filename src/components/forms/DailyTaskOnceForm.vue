@@ -1,7 +1,7 @@
 <template>
   <div class="daily-task-once-form">
     <p class="line">
-      <span class="line-text">TASK CONTENT</span>
+      <span class="line-text uppercase">task content</span>
     </p>
     <div class="input-wrapper">
       <span class="prompt-symbol">&gt;</span>

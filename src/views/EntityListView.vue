@@ -1,28 +1,21 @@
 <template>
   <div class="screen">
     <p class="line">
-      <span class="prompt-symbol">&gt;</span>
       <span class="line-text">Entities</span>
     </p>
 
     <div v-if="entities.length > 0" class="input-block">
       <p class="line">
-        <span class="line-text">SEARCH</span>
+        <span class="line-text uppercase">search</span>
       </p>
       <div class="input-wrapper">
         <span class="prompt-symbol">&gt;</span>
-        <input
-          v-model="searchQuery"
-          type="text"
-          class="line-input"
-          autocomplete="off"
-          spellcheck="false"
-        />
+        <input v-model="searchQuery" type="text" class="line-input" autocomplete="off" spellcheck="false" />
       </div>
     </div>
 
     <p v-if="entities.length === 0" class="line info">
-      <span class="line-text">NO ENTITIES STORED. ADD ONE?</span>
+      <span class="line-text uppercase">no entities stored. add one?</span>
     </p>
 
     <ul v-else class="action-list">
@@ -88,5 +81,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

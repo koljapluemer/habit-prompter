@@ -1,7 +1,7 @@
 <template>
   <div class="daily-task-once-delayed-until-form">
     <p class="line">
-      <span class="line-text">TASK CONTENT</span>
+      <span class="line-text uppercase">task content</span>
     </p>
     <div class="input-wrapper">
       <span class="prompt-symbol">&gt;</span>
@@ -17,7 +17,7 @@
 
     <DateInput
       v-model="formData.startAtDate"
-      label="START DATE"
+      label="start date"
     />
 
     <div class="button-row">
