@@ -51,6 +51,17 @@
         <span class="line-text">{{ syncStatusText }}</span>
       </p>
 
+      <p class="line">
+        <span class="prompt-symbol">&gt;</span>
+        <span class="line-text">Data Export</span>
+      </p>
+
+      <div class="button-row" :class="{ stacked: isNarrow }">
+        <button class="terminal-button" @click="exportData">
+          Export as JSON
+        </button>
+      </div>
+
       <!-- User Interaction Prompts -->
       <div v-if="userInteraction" class="input-stack">
         <p v-if="userInteraction.title" class="line">
@@ -231,6 +242,42 @@ const saveDailyLimit = () => {
 const updateCurrentUser = () => {
   currentUser.value = db.cloud.currentUser
   currentUserId.value = db.cloud.currentUserId
+}
+
+const exportData = async () => {
+  try {
+    // Fetch all actions from the database
+    const actions = await db.actions.toArray()
+
+    // Create export object with metadata
+    const exportData = {
+      exportDate: new Date().toISOString(),
+      version: '1.0',
+      dailyLimit: dailyLimit.value,
+      actions: actions.map(action => ({
+        ...action,
+        // Convert dates to ISO strings for JSON serialization
+        createdAt: action.createdAt?.toISOString(),
+        lastCompleted: action.lastCompleted?.toISOString(),
+        completedAt: action.completedAt?.toISOString()
+      }))
+    }
+
+    // Create blob and download
+    const jsonString = JSON.stringify(exportData, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `habit-tracker-export-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('Export failed:', error)
+    alert('Failed to export data. Please try again.')
+  }
 }
 
 onMounted(() => {
