@@ -1,6 +1,5 @@
 <template>
   <div class="prompt-text-interaction">
-    <h2>{{ entity.prompt }}</h2>
     <PromptTextInput @submit="handleSubmit" />
   </div>
 </template>
@@ -30,10 +29,5 @@ const handleSubmit = (text: string) => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-h2 {
-  margin: 0;
-  text-align: center;
 }
 </style>

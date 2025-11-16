@@ -1,15 +1,23 @@
 <template>
   <div class="date-input">
-    <label v-if="label">{{ label }}</label>
-    <input
-      type="text"
-      :value="modelValue"
-      @input="handleInput"
-      :placeholder="placeholder"
-      pattern="\d{2}-\d{2}-\d{2}"
-    />
-    <span class="hint">Format: yy-mm-dd (e.g., 25-12-31)</span>
-    <span v-if="error" class="error">{{ error }}</span>
+    <p v-if="label" class="line">
+      <span class="line-text">{{ label }} (YY-MM-DD)</span>
+    </p>
+    <div class="input-wrapper">
+      <span class="prompt-symbol">&gt;</span>
+      <input
+        type="text"
+        :value="modelValue"
+        @input="handleInput"
+        class="line-input"
+        pattern="\d{2}-\d{2}-\d{2}"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+    <p v-if="error" class="line">
+      <span class="line-text">{{ error }}</span>
+    </p>
   </div>
 </template>
 
@@ -38,7 +46,7 @@ const error = ref('')
 const validateDate = (value: string): boolean => {
   const regex = /^\d{2}-\d{2}-\d{2}$/
   if (!regex.test(value)) {
-    error.value = 'Use format yy-mm-dd'
+    error.value = 'USE FORMAT YY-MM-DD'
     return false
   }
 
@@ -48,12 +56,12 @@ const validateDate = (value: string): boolean => {
   const day = parseInt(parts[2], 10)
 
   if (month < 1 || month > 12) {
-    error.value = 'Month must be 01-12'
+    error.value = 'MONTH MUST BE 01-12'
     return false
   }
 
   if (day < 1 || day > 31) {
-    error.value = 'Day must be 01-31'
+    error.value = 'DAY MUST BE 01-31'
     return false
   }
 
@@ -84,25 +92,5 @@ watch(() => props.modelValue, (value) => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-label {
-  font-weight: bold;
-}
-
-input {
-  padding: 0.5rem;
-  font-family: inherit;
-  font-size: inherit;
-}
-
-.hint {
-  font-size: 0.9em;
-  opacity: 0.7;
-}
-
-.error {
-  color: #ff4444;
-  font-size: 0.9em;
 }
 </style>

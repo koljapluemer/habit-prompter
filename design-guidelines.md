@@ -1,0 +1,10 @@
+- There is ONLY TWO COLORS. The text color, and the background color, like on an old display (green on green)
+- Lower opacity fonts etc. are not allowed. Other color should show up in NO CIRCUMSTANCE.
+- There is exactly ONE FONT SIZE. No overriding of font sizes in any case is allowed.
+- To visually distinguish important text, `uppercase` it.
+- There is exactly one type of button: A text-color border box with uppercase font inside it (CSS uppercase, not the literal string). There are NO button variations.
+- Badges, cards and other visual containers are not allowed. If needed, use `<hr>, which should be styled the same as button borders. When in doubt, leave out information and keep the design minimal.
+- All text, without excepting, should be left-bound, NEVER centered.
+- Any and all user input should either work via buttons, or via a "command prompt" style empty row with a "> " at the the beginning.
+- Use only `input` in the styling described above, never `textarea`. Do not use `placeholder`, instead describe what should be put in (without waffling!!) in a label above/before
+- When in doubt, keep the layout simple, in a sort of line-by-line style

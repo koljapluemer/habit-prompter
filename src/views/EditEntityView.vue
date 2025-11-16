@@ -1,27 +1,28 @@
 <template>
   <div class="screen" v-if="entity">
-    <h1>Edit {{ getDisplayName(entity.type) }}</h1>
+    <p class="line">
+      <span class="line-text">EDIT {{ getDisplayName(entity.type) }}</span>
+    </p>
 
     <component
       :is="getFormComponent(entity.type)"
       :initial-data="entity"
       @submit="handleSubmit"
       @back="router.back()"
-      submit-label="Update"
+      submit-label="update"
     />
 
     <div class="button-row nav-row" :class="{ stacked: isNarrow }">
-      <RouterLink :to="`/entities/${entity.id}`" class="terminal-button">Cancel</RouterLink>
+      <RouterLink :to="`/entities/${entity.id}`" class="terminal-button">cancel</RouterLink>
     </div>
   </div>
 
   <div v-else class="screen">
     <p class="line">
-      <span class="prompt-symbol">&gt;</span>
-      <span class="line-text">Entity not found.</span>
+      <span class="line-text">ENTITY NOT FOUND</span>
     </p>
     <div class="button-row nav-row">
-      <RouterLink to="/actions" class="terminal-button">Back to list</RouterLink>
+      <RouterLink to="/actions" class="terminal-button">back to list</RouterLink>
     </div>
   </div>
 </template>
@@ -71,11 +72,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
 .nav-row {
   margin-top: 2rem;
 }

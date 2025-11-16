@@ -1,14 +1,19 @@
 <template>
   <div class="interval-input">
-    <label v-if="label">{{ label }}</label>
-    <input
-      type="number"
-      :value="modelValue"
-      @input="handleInput"
-      min="1"
-      :placeholder="placeholder"
-    />
-    <span class="hint">days</span>
+    <p v-if="label" class="line">
+      <span class="line-text">{{ label }}</span>
+    </p>
+    <div class="input-wrapper">
+      <span class="prompt-symbol">&gt;</span>
+      <input
+        type="text"
+        inputmode="numeric"
+        :value="modelValue"
+        @input="handleInput"
+        class="line-input"
+        autocomplete="off"
+      />
+    </div>
   </div>
 </template>
 
@@ -25,7 +30,7 @@ interface Emits {
 
 withDefaults(defineProps<Props>(), {
   label: '',
-  placeholder: 'Enter interval in days'
+  placeholder: 'days'
 })
 
 const emit = defineEmits<Emits>()
@@ -44,20 +49,5 @@ const handleInput = (event: Event) => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-label {
-  font-weight: bold;
-}
-
-input {
-  padding: 0.5rem;
-  font-family: inherit;
-  font-size: inherit;
-}
-
-.hint {
-  font-size: 0.9em;
-  opacity: 0.7;
 }
 </style>

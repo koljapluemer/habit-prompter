@@ -1,6 +1,5 @@
 <template>
   <div class="prompt-yes-no-interaction">
-    <h2>{{ entity.question }}</h2>
     <YesNoButtons @answer="handleAnswer" />
   </div>
 </template>
@@ -30,10 +29,5 @@ const handleAnswer = (value: 'yes' | 'kind-of' | 'no') => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-h2 {
-  margin: 0;
-  text-align: center;
 }
 </style>

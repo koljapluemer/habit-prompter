@@ -1,8 +1,8 @@
 <template>
   <div class="yes-no-buttons">
-    <button @click="emit('answer', 'no')">No</button>
-    <button @click="emit('answer', 'kind-of')">Kind Of</button>
-    <button @click="emit('answer', 'yes')">Yes</button>
+    <button class="terminal-button" @click="emit('answer', 'no')">no</button>
+    <button class="terminal-button" @click="emit('answer', 'kind-of')">kind of</button>
+    <button class="terminal-button" @click="emit('answer', 'yes')">yes</button>
   </div>
 </template>
 
@@ -18,10 +18,9 @@ const emit = defineEmits<Emits>()
 .yes-no-buttons {
   display: flex;
   gap: 1rem;
-  justify-content: center;
 }
 
-button {
+.terminal-button {
   flex: 1;
   min-width: 0;
 }

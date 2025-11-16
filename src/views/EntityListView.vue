@@ -7,7 +7,7 @@
 
     <div v-if="entities.length > 0" class="input-block">
       <p class="line">
-        <span class="line-text">Search</span>
+        <span class="line-text">SEARCH</span>
       </p>
       <div class="input-wrapper">
         <span class="prompt-symbol">&gt;</span>
@@ -15,7 +15,6 @@
           v-model="searchQuery"
           type="text"
           class="line-input"
-          placeholder="filter entities..."
           autocomplete="off"
           spellcheck="false"
         />
@@ -23,23 +22,20 @@
     </div>
 
     <p v-if="entities.length === 0" class="line info">
-      <span class="prompt-symbol">&gt;</span>
-      <span class="line-text">No entities stored. Add one?</span>
+      <span class="line-text">NO ENTITIES STORED. ADD ONE?</span>
     </p>
 
     <ul v-else class="action-list">
       <li v-for="entity in filteredEntities" :key="entity.id">
         <RouterLink :to="`/entities/${entity.id}`" class="list-entry">
-          <span class="prompt-symbol">&gt;</span>
           <span class="line-text">{{ getEntityText(entity) }}</span>
-          <span class="flag type-flag">{{ getDisplayName(entity.type) }}</span>
         </RouterLink>
       </li>
     </ul>
 
     <div class="button-row nav-row">
-      <RouterLink to="/menu" class="terminal-button">Menu</RouterLink>
-      <RouterLink to="/entities/new" class="terminal-button">Add Entity</RouterLink>
+      <RouterLink to="/menu" class="terminal-button">menu</RouterLink>
+      <RouterLink to="/entities/new" class="terminal-button">add entity</RouterLink>
     </div>
   </div>
 </template>
@@ -93,8 +89,4 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.type-flag {
-  font-size: 0.8em;
-  opacity: 0.8;
-}
 </style>

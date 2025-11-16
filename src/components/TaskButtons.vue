@@ -1,7 +1,7 @@
 <template>
   <div class="task-buttons">
-    <button @click="emit('answer', 'already-done')">Already Done</button>
-    <button @click="emit('answer', 'ok')">OK</button>
+    <button class="terminal-button" @click="emit('answer', 'already-done')">already done</button>
+    <button class="terminal-button" @click="emit('answer', 'ok')">ok</button>
   </div>
 </template>
 
@@ -17,10 +17,9 @@ const emit = defineEmits<Emits>()
 .task-buttons {
   display: flex;
   gap: 1rem;
-  justify-content: center;
 }
 
-button {
+.terminal-button {
   flex: 1;
   min-width: 0;
 }

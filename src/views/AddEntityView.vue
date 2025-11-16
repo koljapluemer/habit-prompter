@@ -1,23 +1,27 @@
 <template>
   <div class="screen">
-    <h1>Add Entity</h1>
+    <p class="line">
+      <span class="line-text">ADD ENTITY</span>
+    </p>
 
     <div v-if="step === 1">
       <EntityTypeSelector @select="handleTypeSelect" />
     </div>
 
     <div v-else-if="step === 2 && selectedType">
-      <h2>{{ getDisplayName(selectedType) }}</h2>
+      <p class="line">
+        <span class="line-text">{{ getDisplayName(selectedType) }}</span>
+      </p>
       <component
         :is="getFormComponent(selectedType)"
         @submit="handleSubmit"
         @back="step = 1"
-        submit-label="Create"
+        submit-label="create"
       />
     </div>
 
     <div v-if="step === 1" class="button-row nav-row" :class="{ stacked: isNarrow }">
-      <RouterLink to="/menu" class="terminal-button">Cancel</RouterLink>
+      <RouterLink to="/menu" class="terminal-button">cancel</RouterLink>
     </div>
   </div>
 </template>
@@ -77,16 +81,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
 .nav-row {
   margin-top: 2rem;
 }

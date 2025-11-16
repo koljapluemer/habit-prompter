@@ -1,18 +1,24 @@
 <template>
   <div class="prompt-text-high-prio-form">
-    <div class="field">
-      <label>Prompt (High Priority - shows daily)</label>
+    <p class="line">
+      <span class="line-text">PROMPT (HIGH PRIORITY - SHOWS DAILY)</span>
+    </p>
+    <div class="input-wrapper">
+      <span class="prompt-symbol">&gt;</span>
       <input
         v-model="formData.prompt"
         type="text"
-        placeholder="Enter your prompt"
+        class="line-input"
+        autocomplete="off"
+        spellcheck="false"
         minlength="3"
       />
     </div>
 
-    <div class="actions">
-      <button v-if="showBack" @click="emit('back')">Back</button>
+    <div class="button-row">
+      <button v-if="showBack" class="terminal-button" @click="emit('back')">back</button>
       <button
+        class="terminal-button"
         :disabled="!isValid"
         @click="handleSubmit"
       >
@@ -38,7 +44,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  submitLabel: 'Create',
+  submitLabel: 'create',
   showBack: true
 })
 
@@ -66,35 +72,5 @@ const handleSubmit = () => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-label {
-  font-weight: bold;
-}
-
-input {
-  padding: 0.5rem;
-  font-family: inherit;
-  font-size: inherit;
-}
-
-.actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.actions button {
-  flex: 1;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 </style>

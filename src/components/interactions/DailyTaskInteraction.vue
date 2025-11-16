@@ -1,6 +1,5 @@
 <template>
   <div class="daily-task-interaction">
-    <h2>{{ entity.content }}</h2>
     <TaskButtons @answer="handleAnswer" />
   </div>
 </template>
@@ -38,10 +37,5 @@ const handleAnswer = (action: 'ok' | 'already-done') => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-h2 {
-  margin: 0;
-  text-align: center;
 }
 </style>
