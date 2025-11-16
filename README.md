@@ -1,28 +1,39 @@
 # Local-First Habits and Checks
 
-A local-first habit tracker and task management app with a queue-based daily workflow. Built with Vue 3, TypeScript, and Dexie Cloud for optional sync across devices.
+A queue-based habit and task tracker. All data stored locally in IndexedDB with optional Dexie Cloud sync.
 
-## Features
+## Entity Types
 
-- **Queue-based workflow**: Daily queue presents habits, evaluations, and todos one at a time
-- **Habit tracking**: Create recurring habits with customizable frequency (daily, every N days)
-- **Self-evaluations**: Schedule reflection questions with text responses
-- **Todo management**: Track tasks with progress updates
-- **Priority system**: High-priority items appear first in the queue
-- **Daily limits**: Set a daily completion target to maintain sustainable productivity
-- **Smart cooldowns**: Skip items temporarily (10-minute cooldown) to avoid repetition
-- **Local-first**: All data stored locally with IndexedDB via Dexie
-- **Optional sync**: Dexie Cloud integration for cross-device synchronization
+The app manages 9 entity types, split into two categories:
+
+### Prompts
+- **prompt-text**: Recurring text prompt (shown every N days)
+- **prompt-text-high-prio**: Text prompt shown daily before other items
+- **prompt-yes-no**: Recurring yes/no/kind-of question
+
+### Daily Tasks
+- **daily-task-once**: Single task shown once
+- **daily-task-once-delayed-until**: Single task starting on specific date
+- **daily-task-once-delayed-by-days**: Single task delayed by N days
+- **daily-task-repeated**: Recurring task (every N days)
+- **daily-task-repeated-delayed-until**: Recurring task starting on specific date
+- **daily-task-repeated-delayed-by-days**: Recurring task delayed by N days
+
+## Queue Logic
+
+The main queue processes entities in three phases:
+
+1. **Phase 1**: All high-priority prompts (in random order)
+2. **Phase 2**: Exactly one daily task (if any are due)
+3. **Phase 3**: Regular prompts (infinite loop in random order)
 
 ## Tech Stack
 
-- Vue 3 with TypeScript
-- Vite for build tooling
-- Dexie.js for IndexedDB database
-- Dexie Cloud for optional sync
-- TailwindCSS 4 + DaisyUI for styling
-- Vue Router for navigation
-- Lucide icons
+- Vue 3 + TypeScript
+- Vite
+- Dexie.js (IndexedDB)
+- Dexie Cloud (optional sync)
+- Vue Router
 
 ## Recommended IDE Setup
 

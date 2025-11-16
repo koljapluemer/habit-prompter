@@ -8,3 +8,4 @@
 - Any and all user input should either work via buttons, or via a "command prompt" style empty row with a "> " at the the beginning.
 - Use only `input` in the styling described above, never `textarea`. Do not use `placeholder`, instead describe what should be put in (without waffling!!) in a label above/before
 - When in doubt, keep the layout simple, in a sort of line-by-line style
+- ">" should ONLY be used to indicate an input prompt, nothing else
