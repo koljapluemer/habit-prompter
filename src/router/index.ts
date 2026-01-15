@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainView from '../views/MainView.vue'
 import MenuView from '../views/MenuView.vue'
-import TaskOfTheDayView from '../views/TaskOfTheDayView.vue'
 import EntityListView from '../views/EntityListView.vue'
 import EntityDetailView from '../views/EntityDetailView.vue'
 import AddEntityView from '../views/AddEntityView.vue'
@@ -21,11 +20,6 @@ const router = createRouter({
       path: '/menu',
       name: 'menu',
       component: MenuView,
-    },
-    {
-      path: '/task-of-the-day',
-      name: 'task-of-the-day',
-      component: TaskOfTheDayView,
     },
     {
       path: '/actions',

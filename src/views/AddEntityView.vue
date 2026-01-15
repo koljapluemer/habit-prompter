@@ -57,11 +57,6 @@ const handleSubmit = async (data: any) => {
     answers: []
   }
 
-  // Add isDone for daily tasks that need it
-  if (selectedType.value.startsWith('daily-task-once')) {
-    (entity as any).isDone = false
-  }
-
   await service.create(entity)
   router.push('/actions')
 }

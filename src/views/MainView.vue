@@ -30,26 +30,19 @@ import { RouterLink } from 'vue-router'
 import { entityService } from '@/services/database'
 import type { Entity } from '@/db'
 import { getInteractionComponent, recordEntityAnswer } from '@/utils/entityRegistry'
-import { getCurrentTaskOfTheDay, markTaskCompleted } from '@/services/taskOfTheDay'
 
 const currentEntity = ref<Entity | null>(null)
-const queuePhase = ref<'high-prio' | 'daily-task' | 'prompts'>('high-prio')
+const queuePhase = ref<'high-prio' | 'prompts'>('high-prio')
 
 // Queue state
 const highPrioQueue = ref<Entity[]>([])
-const taskOfTheDay = ref<Entity | null>(null)
-const taskOfTheDayCompleted = ref(false)
 const promptsQueue = ref<Entity[]>([])
-const dailyTaskShown = ref(false)
 
 const isNarrow = ref(false)
 
 const statusMessage = computed(() => {
   if (queuePhase.value === 'high-prio' && highPrioQueue.value.length === 0) {
     return 'no high-priority prompts for today'
-  }
-  if (queuePhase.value === 'daily-task' && (taskOfTheDayCompleted.value || !taskOfTheDay.value)) {
-    return taskOfTheDayCompleted.value ? 'task of the day completed' : 'no daily task available'
   }
   if (queuePhase.value === 'prompts' && promptsQueue.value.length === 0) {
     return 'queue empty. all done for now!'
@@ -64,13 +57,6 @@ const getEntityText = (entity: Entity): string => {
       return entity.prompt
     case 'prompt-yes-no':
       return entity.question
-    case 'daily-task-once':
-    case 'daily-task-once-delayed-until':
-    case 'daily-task-once-delayed-by-days':
-    case 'daily-task-repeated':
-    case 'daily-task-repeated-delayed-until':
-    case 'daily-task-repeated-delayed-by-days':
-      return entity.content
   }
 }
 
@@ -80,16 +66,10 @@ const loadQueue = async () => {
   // Phase 1: High-priority text prompts
   highPrioQueue.value = candidates.promptsTextHighPrio
 
-  // Phase 2: Get task of the day
-  const todayResult = await getCurrentTaskOfTheDay()
-  taskOfTheDay.value = todayResult.task
-  taskOfTheDayCompleted.value = todayResult.isCompleted
-
-  // Phase 3: Other prompts (text and yes/no)
+  // Phase 2: Other prompts (text and yes/no)
   promptsQueue.value = [...candidates.promptsText, ...candidates.promptsYesOrNo]
 
   // Reset state
-  dailyTaskShown.value = false
   queuePhase.value = 'high-prio'
 
   pickNextEntity()
@@ -103,21 +83,10 @@ const pickNextEntity = () => {
       return
     }
     // Move to phase 2
-    queuePhase.value = 'daily-task'
-  }
-
-  // Phase 2: Show task of the day (if exists and not completed)
-  if (queuePhase.value === 'daily-task') {
-    if (!dailyTaskShown.value && taskOfTheDay.value && !taskOfTheDayCompleted.value) {
-      currentEntity.value = taskOfTheDay.value
-      dailyTaskShown.value = true
-      return
-    }
-    // Move to phase 3
     queuePhase.value = 'prompts'
   }
 
-  // Phase 3: Infinite loop through other prompts
+  // Phase 2: Infinite loop through other prompts
   if (queuePhase.value === 'prompts') {
     if (promptsQueue.value.length > 0) {
       currentEntity.value = promptsQueue.value[0]
@@ -145,22 +114,10 @@ const handleAnswer = async (answer: any) => {
       timestamp: new Date(),
       value: answer
     }
-  } else {
-    // Daily tasks
-    answerObj = {
-      timestamp: new Date(),
-      action: answer
-    }
   }
 
   // Record the answer
   await recordEntityAnswer(currentEntity.value, answerObj)
-
-  // Handle task-of-the-day completion
-  if (queuePhase.value === 'daily-task') {
-    await markTaskCompleted()
-    taskOfTheDayCompleted.value = true
-  }
 
   // Remove from appropriate queue
   if (queuePhase.value === 'high-prio') {

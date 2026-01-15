@@ -29,30 +29,6 @@ const entityTypes = [
   {
     value: 'prompt-yes-no' as EntityType,
     label: 'prompt: yes/no'
-  },
-  {
-    value: 'daily-task-once' as EntityType,
-    label: 'daily task: once'
-  },
-  {
-    value: 'daily-task-once-delayed-until' as EntityType,
-    label: 'daily task: once (delayed until)'
-  },
-  {
-    value: 'daily-task-once-delayed-by-days' as EntityType,
-    label: 'daily task: once (delayed by days)'
-  },
-  {
-    value: 'daily-task-repeated' as EntityType,
-    label: 'daily task: repeated'
-  },
-  {
-    value: 'daily-task-repeated-delayed-until' as EntityType,
-    label: 'daily task: repeated (delayed until)'
-  },
-  {
-    value: 'daily-task-repeated-delayed-by-days' as EntityType,
-    label: 'daily task: repeated (delayed by days)'
   }
 ]
 </script>

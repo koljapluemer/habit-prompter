@@ -15,11 +15,6 @@ export interface YesNoAnswer {
   value: 'yes' | 'kind-of' | 'no'
 }
 
-export interface TaskAnswer {
-  timestamp: Date
-  action: 'ok' | 'already-done'
-}
-
 // ============================================================================
 // Entity Type Discriminators
 // ============================================================================
@@ -28,12 +23,6 @@ export type EntityType =
   | 'prompt-text'
   | 'prompt-text-high-prio'
   | 'prompt-yes-no'
-  | 'daily-task-once'
-  | 'daily-task-once-delayed-until'
-  | 'daily-task-once-delayed-by-days'
-  | 'daily-task-repeated'
-  | 'daily-task-repeated-delayed-until'
-  | 'daily-task-repeated-delayed-by-days'
 
 // ============================================================================
 // Entity Interfaces
@@ -68,83 +57,6 @@ export interface PromptYesOrNo {
   answers: YesNoAnswer[]
 }
 
-export interface DailyTaskOnce {
-  id?: string
-  type: 'daily-task-once'
-  content: string
-  isDone: boolean
-  createdAt: Date
-  lastShownAt?: Date
-  answers: TaskAnswer[]
-}
-
-export interface DailyTaskOnceDelayedUntil {
-  id?: string
-  type: 'daily-task-once-delayed-until'
-  content: string
-  isDone: boolean
-  startAtDate: string // yy-mm-dd format
-  createdAt: Date
-  lastShownAt?: Date
-  answers: TaskAnswer[]
-}
-
-export interface DailyTaskOnceDelayedByDays {
-  id?: string
-  type: 'daily-task-once-delayed-by-days'
-  content: string
-  isDone: boolean
-  startInDays: number
-  createdAt: Date
-  lastShownAt?: Date
-  answers: TaskAnswer[]
-}
-
-export interface DailyTaskRepeated {
-  id?: string
-  type: 'daily-task-repeated'
-  content: string
-  interval: number
-  createdAt: Date
-  lastShownAt?: Date
-  answers: TaskAnswer[]
-}
-
-export interface DailyTaskRepeatedDelayedUntil {
-  id?: string
-  type: 'daily-task-repeated-delayed-until'
-  content: string
-  interval: number
-  startAtDate: string // yy-mm-dd format
-  createdAt: Date
-  lastShownAt?: Date
-  answers: TaskAnswer[]
-}
-
-export interface DailyTaskRepeatedDelayedByDays {
-  id?: string
-  type: 'daily-task-repeated-delayed-by-days'
-  content: string
-  interval: number
-  startInDays: number
-  createdAt: Date
-  lastShownAt?: Date
-  answers: TaskAnswer[]
-}
-
-// ============================================================================
-// Task of the Day
-// ============================================================================
-
-export interface TaskOfTheDay {
-  id?: string
-  date: string // yyyy-mm-dd format
-  taskId: string
-  taskType: EntityType
-  selectedAt: Date
-  completedAt?: Date
-}
-
 // ============================================================================
 // Union Type for All Entities
 // ============================================================================
@@ -153,12 +65,6 @@ export type Entity =
   | PromptText
   | PromptTextHighPrio
   | PromptYesOrNo
-  | DailyTaskOnce
-  | DailyTaskOnceDelayedUntil
-  | DailyTaskOnceDelayedByDays
-  | DailyTaskRepeated
-  | DailyTaskRepeatedDelayedUntil
-  | DailyTaskRepeatedDelayedByDays
 
 // ============================================================================
 // Database Definition
@@ -168,13 +74,6 @@ const db = new Dexie('HabitTrackerDB', { addons: [dexieCloud] }) as Dexie & {
   promptsText: EntityTable<PromptText, 'id'>
   promptsTextHighPrio: EntityTable<PromptTextHighPrio, 'id'>
   promptsYesOrNo: EntityTable<PromptYesOrNo, 'id'>
-  dailyTasksOnce: EntityTable<DailyTaskOnce, 'id'>
-  dailyTasksOnceDelayedUntil: EntityTable<DailyTaskOnceDelayedUntil, 'id'>
-  dailyTasksOnceDelayedByDays: EntityTable<DailyTaskOnceDelayedByDays, 'id'>
-  dailyTasksRepeated: EntityTable<DailyTaskRepeated, 'id'>
-  dailyTasksRepeatedDelayedUntil: EntityTable<DailyTaskRepeatedDelayedUntil, 'id'>
-  dailyTasksRepeatedDelayedByDays: EntityTable<DailyTaskRepeatedDelayedByDays, 'id'>
-  taskOfTheDay: EntityTable<TaskOfTheDay, 'id'>
   cloud: {
     configure: (config: { databaseUrl: string; requireAuth: boolean; customLoginGui: boolean }) => void
     currentUser: { email?: string } | null
@@ -209,6 +108,20 @@ db.version(3).stores({
   dailyTasksRepeatedDelayedUntil: '@id, createdAt, lastShownAt, startAtDate',
   dailyTasksRepeatedDelayedByDays: '@id, createdAt, lastShownAt, startInDays',
   taskOfTheDay: '@id, date'
+})
+
+// Version 4: Remove daily task tables
+db.version(4).stores({
+  promptsText: '@id, createdAt, lastShownAt',
+  promptsTextHighPrio: '@id, createdAt, lastShownAt',
+  promptsYesOrNo: '@id, createdAt, lastShownAt',
+  dailyTasksOnce: null,
+  dailyTasksOnceDelayedUntil: null,
+  dailyTasksOnceDelayedByDays: null,
+  dailyTasksRepeated: null,
+  dailyTasksRepeatedDelayedUntil: null,
+  dailyTasksRepeatedDelayedByDays: null,
+  taskOfTheDay: null
 })
 
 // Configure Dexie Cloud

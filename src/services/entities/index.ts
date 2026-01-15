@@ -2,24 +2,12 @@ import type { Entity } from '@/db'
 import { promptTextService } from './promptText'
 import { promptTextHighPrioService } from './promptTextHighPrio'
 import { promptYesOrNoService } from './promptYesOrNo'
-import { dailyTaskOnceService } from './dailyTaskOnce'
-import { dailyTaskOnceDelayedUntilService } from './dailyTaskOnceDelayedUntil'
-import { dailyTaskOnceDelayedByDaysService } from './dailyTaskOnceDelayedByDays'
-import { dailyTaskRepeatedService } from './dailyTaskRepeated'
-import { dailyTaskRepeatedDelayedUntilService } from './dailyTaskRepeatedDelayedUntil'
-import { dailyTaskRepeatedDelayedByDaysService } from './dailyTaskRepeatedDelayedByDays'
 
 // Re-export individual services
 export {
   promptTextService,
   promptTextHighPrioService,
-  promptYesOrNoService,
-  dailyTaskOnceService,
-  dailyTaskOnceDelayedUntilService,
-  dailyTaskOnceDelayedByDaysService,
-  dailyTaskRepeatedService,
-  dailyTaskRepeatedDelayedUntilService,
-  dailyTaskRepeatedDelayedByDaysService
+  promptYesOrNoService
 }
 
 // Re-export types and utilities
@@ -38,35 +26,17 @@ export const entityService = {
     const [
       promptsText,
       promptsTextHighPrio,
-      promptsYesOrNo,
-      dailyTasksOnce,
-      dailyTasksOnceDelayedUntil,
-      dailyTasksOnceDelayedByDays,
-      dailyTasksRepeated,
-      dailyTasksRepeatedDelayedUntil,
-      dailyTasksRepeatedDelayedByDays
+      promptsYesOrNo
     ] = await Promise.all([
       promptTextService.getAll(),
       promptTextHighPrioService.getAll(),
-      promptYesOrNoService.getAll(),
-      dailyTaskOnceService.getAll(),
-      dailyTaskOnceDelayedUntilService.getAll(),
-      dailyTaskOnceDelayedByDaysService.getAll(),
-      dailyTaskRepeatedService.getAll(),
-      dailyTaskRepeatedDelayedUntilService.getAll(),
-      dailyTaskRepeatedDelayedByDaysService.getAll()
+      promptYesOrNoService.getAll()
     ])
 
     return [
       ...promptsText,
       ...promptsTextHighPrio,
-      ...promptsYesOrNo,
-      ...dailyTasksOnce,
-      ...dailyTasksOnceDelayedUntil,
-      ...dailyTasksOnceDelayedByDays,
-      ...dailyTasksRepeated,
-      ...dailyTasksRepeatedDelayedUntil,
-      ...dailyTasksRepeatedDelayedByDays
+      ...promptsYesOrNo
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
   },
 
@@ -77,37 +47,17 @@ export const entityService = {
     const [
       promptsText,
       promptsTextHighPrio,
-      promptsYesOrNo,
-      dailyTasksOnce,
-      dailyTasksOnceDelayedUntil,
-      dailyTasksOnceDelayedByDays,
-      dailyTasksRepeated,
-      dailyTasksRepeatedDelayedUntil,
-      dailyTasksRepeatedDelayedByDays
+      promptsYesOrNo
     ] = await Promise.all([
       promptTextService.getDueCandidates(),
       promptTextHighPrioService.getDueCandidates(),
-      promptYesOrNoService.getDueCandidates(),
-      dailyTaskOnceService.getDueCandidates(),
-      dailyTaskOnceDelayedUntilService.getDueCandidates(),
-      dailyTaskOnceDelayedByDaysService.getDueCandidates(),
-      dailyTaskRepeatedService.getDueCandidates(),
-      dailyTaskRepeatedDelayedUntilService.getDueCandidates(),
-      dailyTaskRepeatedDelayedByDaysService.getDueCandidates()
+      promptYesOrNoService.getDueCandidates()
     ])
 
     return {
       promptsText,
       promptsTextHighPrio,
-      promptsYesOrNo,
-      dailyTasks: [
-        ...dailyTasksOnce,
-        ...dailyTasksOnceDelayedUntil,
-        ...dailyTasksOnceDelayedByDays,
-        ...dailyTasksRepeated,
-        ...dailyTasksRepeatedDelayedUntil,
-        ...dailyTasksRepeatedDelayedByDays
-      ]
+      promptsYesOrNo
     }
   },
 
@@ -126,24 +76,6 @@ export const entityService = {
         break
       case 'prompt-yes-no':
         await promptYesOrNoService.delete(entity.id)
-        break
-      case 'daily-task-once':
-        await dailyTaskOnceService.delete(entity.id)
-        break
-      case 'daily-task-once-delayed-until':
-        await dailyTaskOnceDelayedUntilService.delete(entity.id)
-        break
-      case 'daily-task-once-delayed-by-days':
-        await dailyTaskOnceDelayedByDaysService.delete(entity.id)
-        break
-      case 'daily-task-repeated':
-        await dailyTaskRepeatedService.delete(entity.id)
-        break
-      case 'daily-task-repeated-delayed-until':
-        await dailyTaskRepeatedDelayedUntilService.delete(entity.id)
-        break
-      case 'daily-task-repeated-delayed-by-days':
-        await dailyTaskRepeatedDelayedByDaysService.delete(entity.id)
         break
     }
   }

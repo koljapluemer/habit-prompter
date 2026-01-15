@@ -99,13 +99,6 @@ const getEntityText = (entity: Entity): string => {
       return entity.prompt
     case 'prompt-yes-no':
       return entity.question
-    case 'daily-task-once':
-    case 'daily-task-once-delayed-until':
-    case 'daily-task-once-delayed-by-days':
-    case 'daily-task-repeated':
-    case 'daily-task-repeated-delayed-until':
-    case 'daily-task-repeated-delayed-by-days':
-      return entity.content
   }
 }
 
@@ -116,13 +109,6 @@ const getContentLabel = (entity: Entity): string => {
       return 'Prompt'
     case 'prompt-yes-no':
       return 'Question'
-    case 'daily-task-once':
-    case 'daily-task-once-delayed-until':
-    case 'daily-task-once-delayed-by-days':
-    case 'daily-task-repeated':
-    case 'daily-task-repeated-delayed-until':
-    case 'daily-task-repeated-delayed-by-days':
-      return 'Content'
   }
 }
 

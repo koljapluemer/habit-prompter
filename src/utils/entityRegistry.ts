@@ -5,30 +5,17 @@ import type { EntityService } from '@/services/database'
 // Import interaction components
 import PromptTextInteraction from '@/components/interactions/PromptTextInteraction.vue'
 import PromptYesNoInteraction from '@/components/interactions/PromptYesNoInteraction.vue'
-import DailyTaskInteraction from '@/components/interactions/DailyTaskInteraction.vue'
 
 // Import form components
 import PromptTextForm from '@/components/forms/PromptTextForm.vue'
 import PromptTextHighPrioForm from '@/components/forms/PromptTextHighPrioForm.vue'
 import PromptYesNoForm from '@/components/forms/PromptYesNoForm.vue'
-import DailyTaskOnceForm from '@/components/forms/DailyTaskOnceForm.vue'
-import DailyTaskOnceDelayedUntilForm from '@/components/forms/DailyTaskOnceDelayedUntilForm.vue'
-import DailyTaskOnceDelayedByDaysForm from '@/components/forms/DailyTaskOnceDelayedByDaysForm.vue'
-import DailyTaskRepeatedForm from '@/components/forms/DailyTaskRepeatedForm.vue'
-import DailyTaskRepeatedDelayedUntilForm from '@/components/forms/DailyTaskRepeatedDelayedUntilForm.vue'
-import DailyTaskRepeatedDelayedByDaysForm from '@/components/forms/DailyTaskRepeatedDelayedByDaysForm.vue'
 
 // Import services
 import {
   promptTextService,
   promptTextHighPrioService,
-  promptYesOrNoService,
-  dailyTaskOnceService,
-  dailyTaskOnceDelayedUntilService,
-  dailyTaskOnceDelayedByDaysService,
-  dailyTaskRepeatedService,
-  dailyTaskRepeatedDelayedUntilService,
-  dailyTaskRepeatedDelayedByDaysService
+  promptYesOrNoService
 } from '@/services/database'
 
 // ============================================================================
@@ -55,7 +42,7 @@ export const ENTITY_REGISTRY: Record<EntityType, EntityTypeConfig> = {
     displayName: 'Prompt: Text (High Priority)',
     description: 'Daily high-priority text prompt',
     formComponent: PromptTextHighPrioForm,
-    interactionComponent: PromptTextInteraction, // Reuse same interaction component
+    interactionComponent: PromptTextInteraction,
     service: promptTextHighPrioService
   },
   'prompt-yes-no': {
@@ -64,48 +51,6 @@ export const ENTITY_REGISTRY: Record<EntityType, EntityTypeConfig> = {
     formComponent: PromptYesNoForm,
     interactionComponent: PromptYesNoInteraction,
     service: promptYesOrNoService
-  },
-  'daily-task-once': {
-    displayName: 'Daily Task: Once',
-    description: 'One-time task',
-    formComponent: DailyTaskOnceForm,
-    interactionComponent: DailyTaskInteraction,
-    service: dailyTaskOnceService
-  },
-  'daily-task-once-delayed-until': {
-    displayName: 'Daily Task: Once (Delayed Until)',
-    description: 'One-time task starting on a specific date',
-    formComponent: DailyTaskOnceDelayedUntilForm,
-    interactionComponent: DailyTaskInteraction,
-    service: dailyTaskOnceDelayedUntilService
-  },
-  'daily-task-once-delayed-by-days': {
-    displayName: 'Daily Task: Once (Delayed By Days)',
-    description: 'One-time task starting after N days',
-    formComponent: DailyTaskOnceDelayedByDaysForm,
-    interactionComponent: DailyTaskInteraction,
-    service: dailyTaskOnceDelayedByDaysService
-  },
-  'daily-task-repeated': {
-    displayName: 'Daily Task: Repeated',
-    description: 'Recurring task with interval',
-    formComponent: DailyTaskRepeatedForm,
-    interactionComponent: DailyTaskInteraction,
-    service: dailyTaskRepeatedService
-  },
-  'daily-task-repeated-delayed-until': {
-    displayName: 'Daily Task: Repeated (Delayed Until)',
-    description: 'Recurring task starting on a specific date',
-    formComponent: DailyTaskRepeatedDelayedUntilForm,
-    interactionComponent: DailyTaskInteraction,
-    service: dailyTaskRepeatedDelayedUntilService
-  },
-  'daily-task-repeated-delayed-by-days': {
-    displayName: 'Daily Task: Repeated (Delayed By Days)',
-    description: 'Recurring task starting after N days',
-    formComponent: DailyTaskRepeatedDelayedByDaysForm,
-    interactionComponent: DailyTaskInteraction,
-    service: dailyTaskRepeatedDelayedByDaysService
   }
 }
 
