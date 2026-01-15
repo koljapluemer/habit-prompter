@@ -14,6 +14,24 @@
       </div>
     </div>
 
+    <div v-if="entities.length > 0" class="filter-block">
+      <p class="line">
+        <span class="line-text uppercase">filter by type</span>
+      </p>
+      <div class="checkbox-list">
+        <label v-for="type in allEntityTypes" :key="type" class="checkbox-item">
+          <span class="checkbox-indicator">{{ selectedTypes.has(type) ? '[x]' : '[ ]' }}</span>
+          <input
+            type="checkbox"
+            :checked="selectedTypes.has(type)"
+            @change="toggleType(type)"
+            class="checkbox-hidden"
+          />
+          <span class="checkbox-label">{{ getDisplayName(type) }}</span>
+        </label>
+      </div>
+    </div>
+
     <p v-if="entities.length === 0" class="line info">
       <span class="line-text uppercase">no entities stored. add one?</span>
     </p>
@@ -37,11 +55,23 @@
 import { onMounted, ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { entityService } from '@/services/database'
-import type { Entity } from '@/db'
-import { getDisplayName } from '@/utils/entityRegistry'
+import type { Entity, EntityType } from '@/db'
+import { getDisplayName, ENTITY_REGISTRY } from '@/utils/entityRegistry'
 
 const entities = ref<Entity[]>([])
 const searchQuery = ref('')
+
+const allEntityTypes = Object.keys(ENTITY_REGISTRY) as EntityType[]
+const selectedTypes = ref<Set<EntityType>>(new Set(allEntityTypes))
+
+const toggleType = (type: EntityType) => {
+  if (selectedTypes.value.has(type)) {
+    selectedTypes.value.delete(type)
+  } else {
+    selectedTypes.value.add(type)
+  }
+  selectedTypes.value = new Set(selectedTypes.value)
+}
 
 const getEntityText = (entity: Entity): string => {
   switch (entity.type) {
@@ -65,15 +95,22 @@ const loadEntities = async () => {
 }
 
 const filteredEntities = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return entities.value
+  let result = entities.value
+
+  if (selectedTypes.value.size < allEntityTypes.length) {
+    result = result.filter(entity => selectedTypes.value.has(entity.type))
   }
-  const query = searchQuery.value.toLowerCase()
-  return entities.value.filter(entity => {
-    const text = getEntityText(entity).toLowerCase()
-    const type = getDisplayName(entity.type).toLowerCase()
-    return text.includes(query) || type.includes(query)
-  })
+
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(entity => {
+      const text = getEntityText(entity).toLowerCase()
+      const type = getDisplayName(entity.type).toLowerCase()
+      return text.includes(query) || type.includes(query)
+    })
+  }
+
+  return result
 })
 
 onMounted(async () => {
@@ -81,4 +118,42 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.filter-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.checkbox-item:hover .checkbox-indicator,
+.checkbox-item:hover .checkbox-label {
+  text-decoration: underline;
+}
+
+.checkbox-hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-indicator {
+  font-family: inherit;
+}
+
+.checkbox-label {
+  text-transform: uppercase;
+}
+</style>
