@@ -1,26 +1,12 @@
 <template>
   <div class="screen">
     <p class="line">
-      <span class="line-text uppercase">add entity</span>
+      <span class="line-text uppercase">add prompt</span>
     </p>
 
-    <div v-if="step === 1">
-      <EntityTypeSelector @select="handleTypeSelect" />
-    </div>
+    <PromptTextForm @submit="handleSubmit" submit-label="create" :show-back="false" />
 
-    <div v-else-if="step === 2 && selectedType">
-      <p class="line">
-        <span class="line-text">{{ getDisplayName(selectedType) }}</span>
-      </p>
-      <component
-        :is="getFormComponent(selectedType)"
-        @submit="handleSubmit"
-        @back="step = 1"
-        submit-label="create"
-      />
-    </div>
-
-    <div v-if="step === 1" class="button-row nav-row" :class="{ stacked: isNarrow }">
+    <div class="button-row nav-row" :class="{ stacked: isNarrow }">
       <RouterLink to="/menu" class="terminal-button">cancel</RouterLink>
     </div>
   </div>
@@ -29,35 +15,20 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import type { EntityType } from '@/db'
-import EntityTypeSelector from '@/components/EntityTypeSelector.vue'
-import { getFormComponent, getEntityService, getDisplayName } from '@/utils/entityRegistry'
+import PromptTextForm from '@/components/forms/PromptTextForm.vue'
+import { promptService } from '@/services/database'
 
 const router = useRouter()
-const step = ref(1)
-const selectedType = ref<EntityType | null>(null)
 const isNarrow = ref(false)
 
-const handleTypeSelect = (type: EntityType) => {
-  selectedType.value = type
-  step.value = 2
-}
-
-const handleSubmit = async (data: any) => {
-  if (!selectedType.value) return
-
-  const service = getEntityService(selectedType.value)
-
-  // Build the complete entity
-  const entity = {
-    type: selectedType.value,
-    ...data,
+const handleSubmit = async (data: { prompt: string; interval: number }) => {
+  await promptService.create({
+    prompt: data.prompt,
+    interval: data.interval,
     createdAt: new Date(),
     lastShownAt: undefined,
     answers: []
-  }
-
-  await service.create(entity)
+  })
   router.push('/actions')
 }
 

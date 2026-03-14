@@ -1,82 +1,46 @@
-import type { Entity } from '@/db'
-import { promptTextService } from './promptText'
-import { promptTextHighPrioService } from './promptTextHighPrio'
-import { promptYesOrNoService } from './promptYesOrNo'
+import { db } from '@/db'
+import type { Prompt, TextAnswer } from '@/db'
+import { startOfDay, differenceInDays } from './utils'
 
-// Re-export individual services
-export {
-  promptTextService,
-  promptTextHighPrioService,
-  promptYesOrNoService
-}
-
-// Re-export types and utilities
-export type { EntityService } from './types'
 export { startOfDay, differenceInDays, parseYYMMDD } from './utils'
 
-// ============================================================================
-// Aggregated Entity Service
-// ============================================================================
-
-export const entityService = {
-  /**
-   * Get all entities from all tables, sorted by creation date
-   */
-  async getAllEntities(): Promise<Entity[]> {
-    const [
-      promptsText,
-      promptsTextHighPrio,
-      promptsYesOrNo
-    ] = await Promise.all([
-      promptTextService.getAll(),
-      promptTextHighPrioService.getAll(),
-      promptYesOrNoService.getAll()
-    ])
-
-    return [
-      ...promptsText,
-      ...promptsTextHighPrio,
-      ...promptsYesOrNo
-    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+export const promptService = {
+  async getAll(): Promise<Prompt[]> {
+    return db.prompts.orderBy('createdAt').reverse().toArray()
   },
 
-  /**
-   * Get all due candidates, grouped by category for MainView queue logic
-   */
-  async getAllDueCandidates() {
-    const [
-      promptsText,
-      promptsTextHighPrio,
-      promptsYesOrNo
-    ] = await Promise.all([
-      promptTextService.getDueCandidates(),
-      promptTextHighPrioService.getDueCandidates(),
-      promptYesOrNoService.getDueCandidates()
-    ])
-
-    return {
-      promptsText,
-      promptsTextHighPrio,
-      promptsYesOrNo
-    }
+  async getById(id: string): Promise<Prompt | undefined> {
+    return db.prompts.get(id)
   },
 
-  /**
-   * Delete any entity by dispatching to the appropriate service
-   */
-  async deleteEntity(entity: Entity): Promise<void> {
-    if (!entity.id) return
+  async create(entity: Omit<Prompt, 'id'>): Promise<string> {
+    return db.prompts.add(entity) as Promise<string>
+  },
 
-    switch (entity.type) {
-      case 'prompt-text':
-        await promptTextService.delete(entity.id)
-        break
-      case 'prompt-text-high-prio':
-        await promptTextHighPrioService.delete(entity.id)
-        break
-      case 'prompt-yes-no':
-        await promptYesOrNoService.delete(entity.id)
-        break
-    }
+  async update(id: string, changes: Partial<Prompt>): Promise<void> {
+    await db.prompts.update(id, changes)
+  },
+
+  async delete(id: string): Promise<void> {
+    await db.prompts.delete(id)
+  },
+
+  async recordAnswer(id: string, answer: TextAnswer): Promise<void> {
+    const entity = await db.prompts.get(id)
+    if (!entity) return
+    await db.prompts.update(id, {
+      answers: [...entity.answers, answer],
+      lastShownAt: new Date()
+    })
+  },
+
+  async getDueCandidates(): Promise<Prompt[]> {
+    const entities = await db.prompts.toArray()
+    const now = startOfDay(new Date())
+    return entities.filter(entity => {
+      if (!entity.lastShownAt) return true
+      const lastShown = startOfDay(new Date(entity.lastShownAt))
+      return differenceInDays(now, lastShown) >= entity.interval
+    })
   }
 }

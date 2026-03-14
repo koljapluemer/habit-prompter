@@ -178,17 +178,14 @@ const updateCurrentUser = () => {
 
 const exportData = async () => {
   try {
-    // Fetch all entities from the database
-    const { entityService } = await import('@/services/database')
-    const entities = await entityService.getAllEntities()
+    const { promptService } = await import('@/services/database')
+    const entities = await promptService.getAll()
 
-    // Create export object with metadata
     const exportData = {
       exportDate: new Date().toISOString(),
-      version: '2.0',
+      version: '3.0',
       entities: entities.map(entity => ({
         ...entity,
-        // Convert dates to ISO strings for JSON serialization
         createdAt: entity.createdAt?.toISOString(),
         lastShownAt: entity.lastShownAt?.toISOString(),
         answers: entity.answers.map(answer => ({

@@ -35,17 +35,17 @@
 
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
-import type { PromptText } from '@/db'
+import type { Prompt } from '@/db'
 import IntervalInput from '../IntervalInput.vue'
 
 interface Props {
-  initialData?: Partial<PromptText>
+  initialData?: Partial<Prompt>
   submitLabel?: string
   showBack?: boolean
 }
 
 interface Emits {
-  (e: 'submit', data: Omit<PromptText, 'id' | 'type' | 'createdAt' | 'lastShownAt' | 'answers'>): void
+  (e: 'submit', data: Omit<Prompt, 'id' | 'createdAt' | 'lastShownAt' | 'answers'>): void
   (e: 'back'): void
 }
 

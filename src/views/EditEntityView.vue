@@ -1,11 +1,10 @@
 <template>
   <div class="screen" v-if="entity">
     <p class="line">
-      <span class="line-text uppercase">edit {{ getDisplayName(entity.type) }}</span>
+      <span class="line-text uppercase">edit prompt</span>
     </p>
 
-    <component
-      :is="getFormComponent(entity.type)"
+    <PromptTextForm
       :initial-data="entity"
       @submit="handleSubmit"
       @back="router.back()"
@@ -30,30 +29,24 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import type { Entity } from '@/db'
-import { getFormComponent, getEntityService, getDisplayName } from '@/utils/entityRegistry'
+import type { Prompt } from '@/db'
+import PromptTextForm from '@/components/forms/PromptTextForm.vue'
+import { promptService } from '@/services/database'
 
 const props = defineProps<{ id: string }>()
 
 const router = useRouter()
-const entity = ref<Entity | null>(null)
+const entity = ref<Prompt | null>(null)
 const isNarrow = ref(false)
 
-const handleSubmit = async (data: any) => {
+const handleSubmit = async (data: { prompt: string; interval: number }) => {
   if (!entity.value) return
-
-  const service = getEntityService(entity.value.type)
-  await service.update(entity.value.id!, data)
-
+  await promptService.update(entity.value.id!, data)
   router.push({ name: 'entity-detail', params: { id: entity.value.id } })
 }
 
 const loadEntity = async () => {
-  // We need to check all services to find the entity
-  // For now, we'll use a helper that tries each service
-  const { entityService } = await import('@/services/database')
-  const allEntities = await entityService.getAllEntities()
-  entity.value = allEntities.find(e => e.id === props.id) ?? null
+  entity.value = await promptService.getById(props.id) ?? null
 }
 
 const handleResize = () => {

@@ -5,11 +5,11 @@
 </template>
 
 <script setup lang="ts">
-import type { PromptText } from '@/db'
+import type { Prompt } from '@/db'
 import PromptTextInput from '../PromptTextInput.vue'
 
 interface Props {
-  entity: PromptText
+  entity: Prompt
 }
 
 interface Emits {

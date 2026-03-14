@@ -1,79 +1,26 @@
 import Dexie, { type EntityTable } from 'dexie'
 import dexieCloud from 'dexie-cloud-addon'
 
-// ============================================================================
-// Answer Types
-// ============================================================================
-
 export interface TextAnswer {
   timestamp: Date
   text: string
 }
 
-export interface YesNoAnswer {
-  timestamp: Date
-  value: 'yes' | 'kind-of' | 'no'
-}
-
-// ============================================================================
-// Entity Type Discriminators
-// ============================================================================
-
-export type EntityType =
-  | 'prompt-text'
-  | 'prompt-text-high-prio'
-  | 'prompt-yes-no'
-
-// ============================================================================
-// Entity Interfaces
-// ============================================================================
-
-export interface PromptText {
+export interface Prompt {
   id?: string
-  type: 'prompt-text'
   prompt: string
   interval: number
   createdAt: Date
   lastShownAt?: Date
   answers: TextAnswer[]
 }
-
-export interface PromptTextHighPrio {
-  id?: string
-  type: 'prompt-text-high-prio'
-  prompt: string
-  createdAt: Date
-  lastShownAt?: Date
-  answers: TextAnswer[]
-}
-
-export interface PromptYesOrNo {
-  id?: string
-  type: 'prompt-yes-no'
-  question: string
-  interval: number
-  createdAt: Date
-  lastShownAt?: Date
-  answers: YesNoAnswer[]
-}
-
-// ============================================================================
-// Union Type for All Entities
-// ============================================================================
-
-export type Entity =
-  | PromptText
-  | PromptTextHighPrio
-  | PromptYesOrNo
 
 // ============================================================================
 // Database Definition
 // ============================================================================
 
 const db = new Dexie('HabitTrackerDB', { addons: [dexieCloud] }) as Dexie & {
-  promptsText: EntityTable<PromptText, 'id'>
-  promptsTextHighPrio: EntityTable<PromptTextHighPrio, 'id'>
-  promptsYesOrNo: EntityTable<PromptYesOrNo, 'id'>
+  prompts: EntityTable<Prompt, 'id'>
   cloud: {
     configure: (config: { databaseUrl: string; requireAuth: boolean; customLoginGui: boolean }) => void
     currentUser: { email?: string } | null
@@ -123,6 +70,49 @@ db.version(4).stores({
   dailyTasksRepeatedDelayedByDays: null,
   taskOfTheDay: null
 })
+
+// Version 5: Unify all entity types into a single prompts table
+db.version(5)
+  .stores({
+    prompts: '@id, createdAt, lastShownAt',
+    promptsText: null,
+    promptsTextHighPrio: null,
+    promptsYesOrNo: null
+  })
+  .upgrade(async tx => {
+    const [texts, highPrios, yesNos] = await Promise.all([
+      tx.table('promptsText').toArray(),
+      tx.table('promptsTextHighPrio').toArray(),
+      tx.table('promptsYesOrNo').toArray()
+    ])
+
+    await tx.table('prompts').bulkAdd([
+      ...texts.map((e: any) => ({
+        id: e.id,
+        prompt: e.prompt,
+        interval: e.interval,
+        createdAt: e.createdAt,
+        lastShownAt: e.lastShownAt,
+        answers: e.answers
+      })),
+      ...highPrios.map((e: any) => ({
+        id: e.id,
+        prompt: e.prompt,
+        interval: 1,
+        createdAt: e.createdAt,
+        lastShownAt: e.lastShownAt,
+        answers: e.answers
+      })),
+      ...yesNos.map((e: any) => ({
+        id: e.id,
+        prompt: e.question,
+        interval: e.interval,
+        createdAt: e.createdAt,
+        lastShownAt: e.lastShownAt,
+        answers: e.answers.map((a: any) => ({ timestamp: a.timestamp, text: a.value }))
+      }))
+    ])
+  })
 
 // Configure Dexie Cloud
 db.cloud.configure({
