@@ -18,14 +18,21 @@
 
       <p class="line">
         <span class="prompt-symbol">&gt;</span>
-        <span class="line-text">Data Export</span>
+        <span class="line-text">Data</span>
       </p>
 
       <div class="button-row" :class="{ stacked: isNarrow }">
-        <button class="terminal-button" @click="exportData">
-          Export as JSON
-        </button>
+        <button class="terminal-button" @click="exportData">Export as JSON</button>
+        <button class="terminal-button" @click="triggerImport">Import from JSON</button>
+        <button class="terminal-button" @click="downloadDemo">Download demo JSON</button>
       </div>
+
+      <p v-if="importStatus" class="line info">
+        <span class="prompt-symbol">&gt;</span>
+        <span class="line-text">{{ importStatus }}</span>
+      </p>
+
+      <input ref="fileInput" type="file" accept=".json" class="hidden-input" @change="handleFileImport" />
 
       <!-- User Interaction Prompts -->
       <div v-if="userInteraction" class="input-stack">
@@ -94,6 +101,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { db } from '@/db'
+import type { Prompt, TextAnswer } from '@/db'
+import { promptService } from '@/services/database'
 
 interface DXCInputField {
   type: string
@@ -112,16 +121,28 @@ interface DXCUserInteraction {
   onCancel?: () => void
 }
 
+interface ExportFormat {
+  exportDate: string
+  version: '3.0'
+  entities: Array<Omit<Prompt, 'id' | 'createdAt' | 'lastShownAt' | 'answers'> & {
+    id?: string
+    createdAt: string
+    lastShownAt?: string
+    answers: Array<{ timestamp: string; text: string }>
+  }>
+}
+
 const currentUser = ref<{ email?: string; userId?: string; name?: string } | null>(null)
 const currentUserId = ref<string | null>(null)
 const userInteraction = ref<DXCUserInteraction | null>(null)
 const inputParams = ref<Record<string, string>>({})
 const isNarrow = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
+const importStatus = ref('')
 
 let interactionSubscription: { unsubscribe: () => void } | null = null
 
 const isLoggedIn = computed(() => {
-  // currentUserId is 'unauthorized' when not logged in, or null, or a valid user ID when logged in
   return currentUserId.value !== null && currentUserId.value !== 'unauthorized'
 })
 
@@ -176,39 +197,108 @@ const updateCurrentUser = () => {
   currentUserId.value = db.cloud.currentUserId
 }
 
+const downloadJson = (data: unknown, filename: string) => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
 const exportData = async () => {
   try {
-    const { promptService } = await import('@/services/database')
     const entities = await promptService.getAll()
-
-    const exportData = {
+    const payload: ExportFormat = {
       exportDate: new Date().toISOString(),
       version: '3.0',
-      entities: entities.map(entity => ({
-        ...entity,
-        createdAt: entity.createdAt?.toISOString(),
-        lastShownAt: entity.lastShownAt?.toISOString(),
-        answers: entity.answers.map(answer => ({
-          ...answer,
-          timestamp: answer.timestamp.toISOString()
-        }))
+      entities: entities.map(({ id, prompt, interval, createdAt, lastShownAt, answers }) => ({
+        id,
+        prompt,
+        interval,
+        createdAt: createdAt.toISOString(),
+        lastShownAt: lastShownAt?.toISOString(),
+        answers: answers.map(a => ({ timestamp: a.timestamp.toISOString(), text: a.text }))
       }))
     }
-
-    // Create blob and download
-    const jsonString = JSON.stringify(exportData, null, 2)
-    const blob = new Blob([jsonString], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `habit-tracker-export-${new Date().toISOString().split('T')[0]}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadJson(payload, `habit-tracker-export-${new Date().toISOString().split('T')[0]}.json`)
   } catch (error) {
     console.error('Export failed:', error)
     alert('Failed to export data. Please try again.')
+  }
+}
+
+const downloadDemo = () => {
+  const demo: ExportFormat = {
+    exportDate: new Date().toISOString(),
+    version: '3.0',
+    entities: [
+      {
+        id: 'demo-1',
+        prompt: 'What are you grateful for today?',
+        interval: 1,
+        createdAt: new Date().toISOString(),
+        lastShownAt: undefined,
+        answers: [
+          { timestamp: new Date().toISOString(), text: 'Good weather and coffee.' }
+        ]
+      },
+      {
+        id: 'demo-2',
+        prompt: 'Did you exercise this week?',
+        interval: 7,
+        createdAt: new Date().toISOString(),
+        lastShownAt: undefined,
+        answers: []
+      }
+    ]
+  }
+  downloadJson(demo, 'habit-tracker-demo.json')
+}
+
+const triggerImport = () => {
+  importStatus.value = ''
+  fileInput.value?.click()
+}
+
+const handleFileImport = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  try {
+    const text = await file.text()
+    const parsed = JSON.parse(text) as ExportFormat
+
+    if (!parsed.version || !Array.isArray(parsed.entities)) {
+      importStatus.value = 'error: invalid file format'
+      return
+    }
+
+    const toImport: Omit<Prompt, 'id'>[] = parsed.entities.map(e => ({
+      prompt: e.prompt,
+      interval: e.interval,
+      createdAt: new Date(e.createdAt),
+      lastShownAt: e.lastShownAt ? new Date(e.lastShownAt) : undefined,
+      answers: (e.answers ?? []).map((a): TextAnswer => ({
+        timestamp: new Date(a.timestamp),
+        text: a.text
+      }))
+    }))
+
+    for (const entity of toImport) {
+      await promptService.create(entity)
+    }
+
+    importStatus.value = `imported ${toImport.length} prompt(s)`
+  } catch (error) {
+    console.error('Import failed:', error)
+    importStatus.value = 'error: could not parse file'
+  } finally {
+    input.value = ''
   }
 }
 
@@ -216,23 +306,18 @@ onMounted(() => {
   handleResize()
   window.addEventListener('resize', handleResize)
 
-  // Subscribe to current user changes
   updateCurrentUser()
 
-  // Subscribe to user interaction requests (email/OTP prompts)
   interactionSubscription = db.cloud.userInteraction.subscribe(
     (interaction: unknown) => {
-      // When interaction is undefined, no user interaction is needed
       if (!interaction) {
         userInteraction.value = null
         return
       }
-      // Otherwise, set it to display the prompt
       userInteraction.value = interaction as DXCUserInteraction
     }
   )
 
-  // Poll for user changes (Dexie Cloud updates this reactively)
   const userCheckInterval = setInterval(updateCurrentUser, 1000)
 
   onUnmounted(() => {
@@ -253,5 +338,9 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.hidden-input {
+  display: none;
 }
 </style>
