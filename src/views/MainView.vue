@@ -49,13 +49,14 @@ const pickNextEntity = () => {
 
 const handleAnswer = async (answer: string) => {
   if (!currentEntity.value) return
+  const id = currentEntity.value.id!
 
-  await promptService.recordAnswer(currentEntity.value.id!, {
+  await promptService.recordAnswer(id, {
     timestamp: new Date(),
     text: answer
   })
 
-  queue.value = queue.value.filter(e => e.id !== currentEntity.value!.id)
+  queue.value = queue.value.filter(e => e.id !== id)
   pickNextEntity()
 }
 
