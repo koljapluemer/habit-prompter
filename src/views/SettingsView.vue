@@ -89,17 +89,11 @@
       </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="button-row nav-row" :class="{ stacked: isNarrow }">
-      <RouterLink to="/menu" class="terminal-button">Menu</RouterLink>
-      <RouterLink to="/" class="terminal-button">Main</RouterLink>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { RouterLink } from 'vue-router'
 import { db } from '@/db'
 import type { Prompt, TextAnswer } from '@/db'
 import { promptService } from '@/services/database'

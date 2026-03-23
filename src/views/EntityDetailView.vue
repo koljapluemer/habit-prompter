@@ -2,7 +2,7 @@
   <div class="screen">
     <p class="line">
       <span class="prompt-symbol">&gt;</span>
-      <span class="line-text">Entity Details</span>
+      <span class="line-text">Prompt Details</span>
     </p>
 
     <template v-if="entity">
@@ -34,7 +34,7 @@
 
     <p v-else class="line">
       <span class="prompt-symbol">&gt;</span>
-      <span class="line-text">Entity not found.</span>
+      <span class="line-text">Prompt not found.</span>
     </p>
 
     <div class="button-row nav-row" :class="{ stacked: isNarrow }">
@@ -81,7 +81,7 @@ const goEdit = () => {
 
 const remove = async () => {
   if (!entity.value) return
-  const confirmed = window.confirm('Delete this entity?')
+  const confirmed = window.confirm('Delete this prompt?')
   if (!confirmed) return
   await promptService.delete(entity.value.id!)
   router.push({ name: 'entity-list' })

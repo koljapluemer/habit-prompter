@@ -1,11 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainView from '../views/MainView.vue'
-import MenuView from '../views/MenuView.vue'
 import EntityListView from '../views/EntityListView.vue'
 import EntityDetailView from '../views/EntityDetailView.vue'
 import AddEntityView from '../views/AddEntityView.vue'
 import EditEntityView from '../views/EditEntityView.vue'
-import AboutView from '../views/AboutView.vue'
 import SettingsView from '../views/SettingsView.vue'
 
 const router = createRouter({
@@ -18,8 +16,11 @@ const router = createRouter({
     },
     {
       path: '/menu',
-      name: 'menu',
-      component: MenuView,
+      redirect: '/',
+    },
+    {
+      path: '/about',
+      redirect: '/',
     },
     {
       path: '/actions',
@@ -58,11 +59,6 @@ const router = createRouter({
     {
       path: '/actions/:id/edit',
       redirect: to => `/entities/${to.params.id}/edit`,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutView,
     },
     {
       path: '/settings',

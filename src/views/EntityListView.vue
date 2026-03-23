@@ -1,8 +1,12 @@
 <template>
   <div class="screen">
     <p class="line">
-      <span class="line-text">Entities</span>
+      <span class="line-text">Prompts</span>
     </p>
+
+    <div class="button-row">
+      <RouterLink to="/entities/new" class="terminal-button">add prompt</RouterLink>
+    </div>
 
     <div v-if="entities.length > 0" class="input-block">
       <p class="line">
@@ -15,7 +19,7 @@
     </div>
 
     <p v-if="entities.length === 0" class="line info">
-      <span class="line-text uppercase">no entities stored. add one?</span>
+      <span class="line-text uppercase">no prompts stored. add one?</span>
     </p>
 
     <ul v-else class="action-list">
@@ -25,11 +29,6 @@
         </RouterLink>
       </li>
     </ul>
-
-    <div class="button-row nav-row">
-      <RouterLink to="/menu" class="terminal-button">menu</RouterLink>
-      <RouterLink to="/entities/new" class="terminal-button">add entity</RouterLink>
-    </div>
   </div>
 </template>
 

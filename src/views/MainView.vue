@@ -16,9 +16,8 @@
       />
     </div>
 
-    <div class="button-row nav-row" :class="{ stacked: isNarrow }">
-      <RouterLink to="/menu" class="terminal-button">menu</RouterLink>
-      <RouterLink v-if="currentEntity" :to="`/entities/${currentEntity.id}`" class="terminal-button">view</RouterLink>
+    <div v-if="currentEntity" class="button-row nav-row" :class="{ stacked: isNarrow }">
+      <RouterLink :to="`/entities/${currentEntity.id}`" class="terminal-button">view</RouterLink>
     </div>
   </div>
 </template>

@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, RouterLink } from 'vue-router'
 </script>
 
 <template>
   <div class="app-shell">
     <main class="terminal">
+      <nav class="top-nav">
+        <RouterLink to="/" class="terminal-button" exact-active-class="active">Main</RouterLink>
+        <RouterLink to="/actions" class="terminal-button" active-class="active">Manage</RouterLink>
+        <RouterLink to="/settings" class="terminal-button" active-class="active">Settings</RouterLink>
+      </nav>
       <RouterView />
     </main>
   </div>
@@ -165,6 +170,19 @@ a {
   cursor: not-allowed;
   background: var(--background);
   color: var(--foreground);
+}
+
+.top-nav {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--foreground);
+}
+
+.terminal-button.active {
+  background: var(--foreground);
+  color: var(--background);
 }
 
 .nav-row {

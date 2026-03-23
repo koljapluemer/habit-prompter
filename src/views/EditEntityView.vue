@@ -18,7 +18,7 @@
 
   <div v-else class="screen">
     <p class="line">
-      <span class="line-text uppercase">entity not found</span>
+      <span class="line-text uppercase">prompt not found</span>
     </p>
     <div class="button-row nav-row">
       <RouterLink to="/actions" class="terminal-button">back to list</RouterLink>

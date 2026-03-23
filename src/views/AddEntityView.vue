@@ -7,7 +7,7 @@
     <PromptTextForm @submit="handleSubmit" submit-label="create" :show-back="false" />
 
     <div class="button-row nav-row" :class="{ stacked: isNarrow }">
-      <RouterLink to="/menu" class="terminal-button">cancel</RouterLink>
+      <RouterLink to="/actions" class="terminal-button">cancel</RouterLink>
     </div>
   </div>
 </template>
