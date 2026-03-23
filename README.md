@@ -1,70 +1,80 @@
 # Local-First Habits and Checks
 
-A queue-based habit and task tracker. All data stored locally in IndexedDB with optional Dexie Cloud sync.
+![](doc/screenshot.webp)
 
-## Entity Types
+A queue-based habit prompter. All data stored locally in IndexedDB with optional Dexie Cloud sync.
 
-The app manages 9 entity types, split into two categories:
+## Concept
 
-### Prompts
-- **prompt-text**: Recurring text prompt (shown every N days)
-- **prompt-text-high-prio**: Text prompt shown daily before other items
-- **prompt-yes-no**: Recurring yes/no/kind-of question
+Each **prompt** is a text question or habit check with an **interval** (in days). The main view works through a queue of all due prompts — those not seen within their interval. After answering, the prompt leaves the queue until it is due again.
 
-### Daily Tasks
-- **daily-task-once**: Single task shown once
-- **daily-task-once-delayed-until**: Single task starting on specific date
-- **daily-task-once-delayed-by-days**: Single task delayed by N days
-- **daily-task-repeated**: Recurring task (every N days)
-- **daily-task-repeated-delayed-until**: Recurring task starting on specific date
-- **daily-task-repeated-delayed-by-days**: Recurring task delayed by N days
+- `interval: 1` → shown daily
+- `interval: 7` → shown once a week
+- etc.
+
+## Data Model
+
+```ts
+interface Prompt {
+  id?: string
+  prompt: string       // the text shown to the user
+  interval: number     // days between appearances
+  createdAt: Date
+  lastShownAt?: Date
+  answers: TextAnswer[]
+}
+
+interface TextAnswer {
+  timestamp: Date
+  text: string
+}
+```
 
 ## Queue Logic
 
-The main queue processes entities in three phases:
+On load, all prompts whose `lastShownAt` is older than `interval` days (or never shown) are collected into a queue and worked through one by one.
 
-1. **Phase 1**: All high-priority prompts (in random order)
-2. **Phase 2**: Exactly one daily task (if any are due)
-3. **Phase 3**: Regular prompts (infinite loop in random order)
+## Data Import / Export
+
+Settings → Export as JSON / Import from JSON. The export format:
+
+```json
+{
+  "exportDate": "2026-01-01T00:00:00.000Z",
+  "version": "3.0",
+  "entities": [
+    {
+      "prompt": "What are you grateful for today?",
+      "interval": 1,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "answers": []
+    }
+  ]
+}
+```
+
+A demo file showing the structure can be downloaded from Settings.
 
 ## Tech Stack
 
 - Vue 3 + TypeScript
-- Vite
+- Vite + PWA
 - Dexie.js (IndexedDB)
 - Dexie Cloud (optional sync)
 - Vue Router
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Project Setup
+## Setup
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
 ```sh
-npm run dev
+npm run dev       # dev server
+npm run build     # production build
+npm run lint      # lint
 ```
 
-### Type-Check, Compile and Minify for Production
+## IDE
 
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
