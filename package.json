@@ -1,7 +1,7 @@
 {
   "name": "local-first-habits-and-checks",
   "version": "1.0.0",
-  "description": "A local-first habit tracker and task management app with queue-based daily workflow",
+  "description": "a local-first web tool to regularly asks questions to yourself ",
   "private": true,
   "type": "module",
   "engines": {

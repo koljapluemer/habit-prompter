@@ -10,9 +10,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Habits & Checks',
-        short_name: 'Habits',
-        description: 'A local-first habit tracker and task management app with queue-based daily workflow',
+        name: 'Prompts',
+        short_name: 'Prompts',
+        description: 'a local-first web tool to regularly asks questions to yourself ',
         theme_color: '#7a29e9',
         background_color: '#210b3f',
         display: 'standalone',
